@@ -1,7 +1,11 @@
 package tools
 
 import (
-	"template/app/models"
+	"fmt"
+	"strconv"
+	"template/app/entity"
+	//"template/app/models"
+
 	//"errors"
 	"time"
 
@@ -12,28 +16,34 @@ import (
 
 
 
+func GenerateToken(entitys interface{}) string {
+    var name, role, types string
+    var idAdmin string // Mengubah tipe data menjadi string
 
-func GenerateToken(entitys interface{}) (string) {
-	var name, idAdmin, role, satminkal string
+	fmt.Println(entitys)
+    switch e := entitys.(type) {
+    case entity.Users:
+        name = e.Nama
+        idAdmin = strconv.Itoa(int(e.IdUsers)) // Contoh penggunaan ID, sesuaikan dengan kebutuhan Anda
+        role = "5"
+        types = "Peserta"
+    case entity.SuperAdmin:
+        name = e.Nama
+        idAdmin = strconv.Itoa(int(e.IdSuperAdmin)) // Konversi ID ke string
+        role = "1"
+        types = "SuperAdmin"
+    default:
+        return ""
+    }
 
-	switch e := entitys.(type) {
-	case models.User :
-		name = e.Name
-		idAdmin = e.ID
-		role = e.Role
-		satminkal = e.Satminkal
-	default:
-		return ""
-	}
-
-	claims := jwt.MapClaims{
-		"name":      name,
-		"id_admin":  idAdmin,
-		"role":      role,
-		"satminkal": satminkal,
-		"exp":       time.Now().Add(time.Hour * 72).Unix(),
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	t,_:= token.SignedString([]byte("secret"))
-	return t
+    claims := jwt.MapClaims{
+        "name":     name,
+        "id_admin": idAdmin,
+        "role":     role,
+        "type":     types,
+        "exp":      time.Now().Add(time.Hour * 72).Unix(),
+    }
+    token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+    t, _ := token.SignedString([]byte("secret"))
+    return t
 }

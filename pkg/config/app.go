@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/spf13/viper"
-	"github.com/goccy/go-json"
+	
 )
 //Kumpulan Konfigurasi Go Fiber
 func NewFiber(config *viper.Viper) *fiber.App {
@@ -15,8 +15,6 @@ func NewFiber(config *viper.Viper) *fiber.App {
 		AppName:      config.GetString("app.name"),
 		ErrorHandler: NewErrorHandler(),
 		Prefork:      config.GetBool("web.prefork"),
-		JSONEncoder: json.Marshal,
-        JSONDecoder: json.Unmarshal,
 	})
 
 	app.Use(

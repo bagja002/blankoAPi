@@ -1,10 +1,11 @@
 package database
 
 import (
-	"template/app/entity"
-	"template/pkg/config"
 	"fmt"
 	"log"
+	"template/app/entity"
+	"template/pkg/config"
+	"template/pkg/tools"
 	"time"
 
 	//"github.com/spf13/viper"
@@ -45,8 +46,35 @@ func Connect(){
 	connection.SetMaxOpenConns(maxConnection)
 	connection.SetConnMaxLifetime(time.Second * time.Duration(maxLifeTimeConnection))
 
-	db.AutoMigrate(&entity.Users{})
+	db.AutoMigrate(
+		&entity.Users{},
+		&entity.AdminPusat{},
+		&entity.SuperAdmin{},
+		&entity.Lemdik{},
+	)
 
+	
+	// Cek apakah akun Super Admin sudah terbuat
+	var existingSuperAdmin entity.SuperAdmin
+	if err := db.Where("username = ? ", "super").Find(&existingSuperAdmin).Error; err != nil {
+		// Penanganan kesalahan jika terjadi
+		fmt.Println("Gagal membuat atau menemukan akun Super Admin:", err)
+	} else {
+		if existingSuperAdmin.IdSuperAdmin == 0 {
+			// Akun Super Admin baru berhasil dibuat
+			super:=entity.SuperAdmin{
+				Username: "super",
+				Nama: "superadmin",
+				Email: "superadmin@puslat.com",
+				Password: tools.GeneratePassword("superadmin"),
+			}
+			db.Create(&super)
+			fmt.Println("Akun Super Admin baru berhasil dibuat")
+		} else {
+			// Akun Super Admin sudah ada
+			fmt.Println("Akun Super Admin sudah ada")
+		}
+	}
 	DB = db
 
 

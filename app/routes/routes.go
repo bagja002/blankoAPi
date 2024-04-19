@@ -14,5 +14,9 @@ func SetupRoutesFiber(app *fiber.App){
     })
 
 	app.Get("/test",controllers.CreateUser)
+
+	SuperAdmin:= app.Group("/superadmin")
+
+	SuperAdmin.Post("/login", controllers.SuperAdminLogin)
 	
 }

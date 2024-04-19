@@ -1,10 +1,8 @@
 package controllers
 
 import (
-	//"backend-elaut/app/entity"
-
 	"template/app/entity"
-	"template/app/models"
+	//"template/app/models"
 	"template/pkg/database"
 	"template/pkg/tools"
 
@@ -12,17 +10,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func CreateUser(c *fiber.Ctx)error{
-
-	
-
-	return c.SendString("Testing")
-}
-
-
-
-func Login(c *fiber.Ctx) error {
-
+func SuperAdminLogin(c *fiber.Ctx)error{
 	var data map[string]string
 
 	if err := c.BodyParser(&data); err != nil {
@@ -31,28 +19,39 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
-	var users entity.Users
+	var users entity.SuperAdmin
+
 
 	database.DB.Where("username = ? ", data["username"]).First(&users)
-	if users.IdUsers == 0 {
+	if users.IdSuperAdmin == 0 {
 		c.Status(fiber.StatusUnauthorized)
 		return c.JSON(fiber.Map{
 			"pesan": "Username tidak di temukan",
 		})
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte("Password database"), []byte(data["password"])); err != nil {
+
+	if err := bcrypt.CompareHashAndPassword([]byte(users.Password), []byte(data["password"])); err != nil {
 		c.Status(fiber.StatusUnauthorized)
 		return c.JSON(fiber.Map{
 			"pesan": "Incorrect password!",
 		})
 	} else {
-		t:= tools.GenerateToken(models.User{})
+		t:= tools.GenerateToken(users)
 		return c.JSON(fiber.Map{
 			"t":t,
 		})
 	}
 
 	
+
+
 }
 
+func CreateAdminPusat(c *fiber.Ctx)error{
+
+	
+
+
+		return nil
+	}

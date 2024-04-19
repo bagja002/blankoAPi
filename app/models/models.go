@@ -22,3 +22,24 @@ type User struct {
 	Role      string `json:"role"`
 	Satminkal string `json:"satminkal"`
 }
+
+type SuperAdmin struct{ 
+	IdSuperAdmin uint  `json:"id_admin"`
+	Nama string	`json:"nama"`
+	Email string`json:"email"`
+	Username string`json:"username"`
+	Password string`json:"password"`
+	Status string`json:"status"`
+}
+
+//Entity Untuk Lemdiklat
+
+type AdminPusat struct{
+	IdAdminPusat uint 
+	Nama string
+	Email string
+	Password string
+	NoTelpon string
+	Nip string	
+	Status string
+}
