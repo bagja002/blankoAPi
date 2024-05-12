@@ -1,13 +1,28 @@
 package entity
 
-
+//Users Membuat Akun sendiri 
 type Users struct{
 	IdUsers uint 		`gorm:"primary_key;auto_increment"`
 	Nama	string
-
+	NoTelpon int  
+	Email string
+	Password string
+	Kota string
+	Provinsi string
+	Alamat string
+	Nik int 
+	TempatLahir string
+	TanggalLahir string
+	JenisKelamin string
+	PendidikanTerakhir string
+	Agama string
+	Foto string
 	Status 	string
+	CreateAt string
+	UpdateAt string
 }
 
+//Auto generate
 type SuperAdmin struct {
     IdSuperAdmin uint `gorm:"primary_key;auto_increment"`
     Nama         string
@@ -19,7 +34,7 @@ type SuperAdmin struct {
 
 
 //Entity Untuk Lemdiklat
-
+//Auto Generate or Input From admin pusat
 type AdminPusat struct{
 	IdAdminPusat uint `gorm:"primary_key;auto_increment"`
 	Nama string
@@ -30,10 +45,3 @@ type AdminPusat struct{
 	Status string
 }
 
-
-type Lemdik struct {
-
-	IdLemdik uint 
-	NamaLemdik string
-	Status string 
-}

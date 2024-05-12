@@ -16,9 +16,9 @@ import (
 
 var DB *gorm.DB
 
-func Connect(){
+func Connect() {
 
-	viper:= config.NewViper()
+	viper := config.NewViper()
 	username := viper.GetString("database.username")
 	password := viper.GetString("database.password")
 	host := viper.GetString("database.host")
@@ -49,11 +49,11 @@ func Connect(){
 	db.AutoMigrate(
 		&entity.Users{},
 		&entity.AdminPusat{},
+		&entity.Lemdiklat{},
 		&entity.SuperAdmin{},
-		&entity.Lemdik{},
+		&entity.Pelatihan{},
 	)
 
-	
 	// Cek apakah akun Super Admin sudah terbuat
 	var existingSuperAdmin entity.SuperAdmin
 	if err := db.Where("username = ? ", "super").Find(&existingSuperAdmin).Error; err != nil {
@@ -62,10 +62,10 @@ func Connect(){
 	} else {
 		if existingSuperAdmin.IdSuperAdmin == 0 {
 			// Akun Super Admin baru berhasil dibuat
-			super:=entity.SuperAdmin{
+			super := entity.SuperAdmin{
 				Username: "super",
-				Nama: "superadmin",
-				Email: "superadmin@puslat.com",
+				Nama:     "superadmin",
+				Email:    "superadmin@puslat.com",
 				Password: tools.GeneratePassword("superadmin"),
 			}
 			db.Create(&super)
@@ -76,6 +76,5 @@ func Connect(){
 		}
 	}
 	DB = db
-
 
 }
