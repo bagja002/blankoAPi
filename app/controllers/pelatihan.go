@@ -155,7 +155,7 @@ func GetPelatihan(c *fiber.Ctx) error {
 	database.DB.Find(&pelatihan)
 
 	for i, _:= range pelatihan {
-		pelatihan[i].FotoPelatihan = baseUrl+"http://127.0.0.1:3000/public/static/pelatihan/" + pelatihan[i].FotoPelatihan
+		pelatihan[i].FotoPelatihan = baseUrl+"/public/static/pelatihan/" + pelatihan[i].FotoPelatihan
 	}
 
 
