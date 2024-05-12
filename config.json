@@ -3,8 +3,9 @@
       "name": "Template"
     },
     "web": {
+      "baseUrl":"http://103.177.176.202",
       "prefork": false,
-      "port": ":3000"
+      "port": ":8000"
     },
     "database": {
       "username": "Puslat",

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"template/app/entity"
+	"template/pkg/config"
 	"template/pkg/database"
 	"template/pkg/tools"
 
@@ -48,6 +49,8 @@ func CreatePelatihan(c *fiber.Ctx) error {
 	//Pakai JWT
 
 	//Foto terlebih dahulu
+
+
 	file, err := c.FormFile("photo_pelatihan")
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"Message": "Failed to retrieve file", "Error": err.Error()})
@@ -122,6 +125,9 @@ func CreatePelatihan(c *fiber.Ctx) error {
 
 func GetPelatihan(c *fiber.Ctx) error {
 
+	viper := config.NewViper()
+	baseUrl := viper.GetString("web.baseUrl")
+
 	//ambil By Id
 	id:= c.Query("id")
 	if id != "" {	
@@ -131,7 +137,7 @@ func GetPelatihan(c *fiber.Ctx) error {
 
 		database.DB.Where("id_Pelatihan = ?", id).Find(&pelatihan)
 
-		pelatihan.FotoPelatihan = "http://127.0.0.1:3000/public/static/pelatihan/" + pelatihan.FotoPelatihan
+		pelatihan.FotoPelatihan = baseUrl + "/public/static/pelatihan/" + pelatihan.FotoPelatihan
 		//jangan lupa filter
 
 		return c.JSON(fiber.Map{
@@ -149,7 +155,7 @@ func GetPelatihan(c *fiber.Ctx) error {
 	database.DB.Find(&pelatihan)
 
 	for i, _:= range pelatihan {
-		pelatihan[i].FotoPelatihan = "http://127.0.0.1:3000/public/static/pelatihan/" + pelatihan[i].FotoPelatihan
+		pelatihan[i].FotoPelatihan = baseUrl+"http://127.0.0.1:3000/public/static/pelatihan/" + pelatihan[i].FotoPelatihan
 	}
 
 
