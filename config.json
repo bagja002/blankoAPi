@@ -7,8 +7,8 @@
       "port": ":3000"
     },
     "database": {
-      "username": "root",
-      "password": "",
+      "username": "Puslat",
+      "password": "@Puslat123",
       "host": "localhost",
       "port": 3306,
       "name": "kkp-elaut",
