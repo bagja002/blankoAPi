@@ -1,17 +1,15 @@
 package controllers
 
 import (
-
 	"template/app/entity"
 	//"template/app/models"
 	"template/pkg/database"
 	"template/pkg/tools"
-
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func SuperAdminLogin(c *fiber.Ctx)error{
+func SuperAdminLogin(c *fiber.Ctx) error {
 	var data map[string]string
 
 	if err := c.BodyParser(&data); err != nil {
@@ -22,7 +20,6 @@ func SuperAdminLogin(c *fiber.Ctx)error{
 
 	var users entity.SuperAdmin
 
-
 	database.DB.Where("username = ? ", data["username"]).First(&users)
 	if users.IdSuperAdmin == 0 {
 		c.Status(fiber.StatusUnauthorized)
@@ -31,25 +28,21 @@ func SuperAdminLogin(c *fiber.Ctx)error{
 		})
 	}
 
-
 	if err := bcrypt.CompareHashAndPassword([]byte(users.Password), []byte(data["password"])); err != nil {
 		c.Status(fiber.StatusUnauthorized)
 		return c.JSON(fiber.Map{
 			"pesan": "Incorrect password!",
 		})
 	} else {
-		t:= tools.GenerateToken(users)
+		t := tools.GenerateToken(users)
 		return c.JSON(fiber.Map{
-			"t":t,
+			"t": t,
 		})
 	}
 
-	
-
-
 }
 
-func CreateAdminPusat(c *fiber.Ctx)error{
+func CreateAdminPusat(c *fiber.Ctx) error {
 
 	id_admin, _ := c.Locals("id_admin").(string)
 	role, _ := c.Locals("role").(string)
@@ -98,12 +91,5 @@ func CreateAdminPusat(c *fiber.Ctx)error{
 		})
 	}
 
-	
-
-
-
-	
-
-
-		return nil
-	}
+	return nil
+}

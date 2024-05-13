@@ -68,8 +68,8 @@ func JwtProtect() fiber.Handler {
 		// Extract data from claims and add it to the context
 		c.Locals("name", claims["name"].(string))
 		c.Locals("id_admin", int(claims["id_admin"].(float64)))
-		c.Locals("role", claims["role"].(float64))
-		c.Locals("satminkal", claims["satminkal"].(string))
+		c.Locals("role", claims["role"].(string))
+		c.Locals("type", claims["type"].(string))
 
 		// Continue with next middleware/handler
 		return c.Next()

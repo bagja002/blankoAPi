@@ -2,7 +2,7 @@ package tools
 
 import (
 	"fmt"
-	"strconv"
+
 	"template/app/entity"
 	//"template/app/models"
 
@@ -18,20 +18,26 @@ import (
 
 func GenerateToken(entitys interface{}) string {
     var name, role, types string
-    var idAdmin string // Mengubah tipe data menjadi string
+    var idAdmin float64 // Mengubah tipe data menjadi string
 
 	fmt.Println(entitys)
     switch e := entitys.(type) {
     case entity.Users:
         name = e.Nama
-        idAdmin = strconv.Itoa(int(e.IdUsers)) // Contoh penggunaan ID, sesuaikan dengan kebutuhan Anda
+        idAdmin = float64((int(e.IdUsers))) // Contoh penggunaan ID, sesuaikan dengan kebutuhan Anda
         role = "5"
         types = "Peserta"
     case entity.SuperAdmin:
         name = e.Nama
-        idAdmin = strconv.Itoa(int(e.IdSuperAdmin)) // Konversi ID ke string
+        idAdmin = float64((int(e.IdSuperAdmin))) // Konversi ID ke string
         role = "1"
         types = "SuperAdmin"
+
+    case entity.Lemdiklat:
+        name = e.NamaLemdik
+        idAdmin =float64(int(e.IdLemdik))
+        role = IntToString(roleLemdiklat)
+        types = "Lemdiklat"
     default:
         return ""
     }

@@ -2,6 +2,7 @@ package routes
 
 import (
 	"template/app/controllers"
+	"template/pkg/middleware"
 	"template/public/static"
 
 	"github.com/gofiber/fiber/v2"
@@ -22,8 +23,16 @@ func SetupRoutesFiber(app *fiber.App){
 	//Pelatihan 
 	lemdik.Post("/createPelatihan", controllers.CreatePelatihan)
 	lemdik.Get("/getPelatihan", controllers.GetPelatihan)
+	lemdik.Post("/login", controllers.LoginLemdik)
 
+
+
+	//super admin
+	//Create User area
 	SuperAdmin:= app.Group("/superadmin")
+
+	SuperAdmin.Post("/regiterLemdik",middleware.JwtProtect(), controllers.RegisterLemdik)
+
 
 	SuperAdmin.Post("/login", controllers.SuperAdminLogin)
 

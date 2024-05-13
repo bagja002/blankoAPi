@@ -11,8 +11,10 @@ type Lemdiklat struct{
 	Email 	string
 	Password string
 	Alamat 	string
+	Deskripsi string
 	CreateAt string
 	UpdateAt string
+	Pelatihan []Pelatihan `gorm:"foreignKey:IdLemdik"`
 	
 }
 

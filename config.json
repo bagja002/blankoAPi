@@ -1,9 +1,9 @@
 {
     "app": {
-      "name": "Template"
+      "name": "Marline Engine"
     },
     "web": {
-      "baseUrl":"http://103.177.176.202",
+      "baseUrl":"http://103.177.176.202:8000",
       "prefork": false,
       "port": ":8000"
     },
