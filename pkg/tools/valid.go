@@ -86,3 +86,26 @@ func ValidationJwtBPPSDM(c *fiber.Ctx, role string, id_admin int, names string) 
     return nil
 }
 
+ 
+func ValidationJwtUsers(c *fiber.Ctx, role string, id_admin int, names string) *fiber.Map {
+    if role != "5" {
+        return &fiber.Map{
+            "pesan": "Role Bukan Admin Pusat",
+        }
+    }
+    if id_admin == 0 {
+        return &fiber.Map{
+            "pesan": "Admin tidak terdaftar",
+        }
+    }
+    if names == "" {
+        return &fiber.Map{
+            "pesan": "Tidak ada Nama di dalam Jwt",
+        }
+    }
+    // Jika semuanya valid, kembalikan nilai null (tidak ada pesan kesalahan)
+    return nil
+}
+
+
+

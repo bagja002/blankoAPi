@@ -14,6 +14,12 @@ type Users struct{
 	TempatLahir string
 	TanggalLahir string
 	JenisKelamin string
+	Pekerjaan string
+	GolonganDarah string
+	StatusMenikah string
+	Kewarganegaraan string
+	IbuKandung string
+	NegaraTujuanBekerja string
 	PendidikanTerakhir string
 	Agama string
 	Foto string

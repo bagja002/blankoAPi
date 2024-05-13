@@ -1,7 +1,7 @@
 package tools
 
 import (
-	"fmt"
+	//"fmt"
 
 	"template/app/entity"
 	//"template/app/models"
@@ -20,7 +20,7 @@ func GenerateToken(entitys interface{}) string {
     var name, role, types string
     var idAdmin float64 // Mengubah tipe data menjadi string
 
-	fmt.Println(entitys)
+	
     switch e := entitys.(type) {
     case entity.Users:
         name = e.Nama

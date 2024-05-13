@@ -52,6 +52,7 @@ func Connect() {
 		&entity.Lemdiklat{},
 		&entity.SuperAdmin{},
 		&entity.Pelatihan{},
+		&entity.Sarpras{},
 	)
 
 	// Cek apakah akun Super Admin sudah terbuat

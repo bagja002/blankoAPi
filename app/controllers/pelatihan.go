@@ -13,7 +13,7 @@ import (
 
 type Pelatihan struct {
 	IdPelatihan              uint   `gorm:"primary_key;auto_increment" json:"id_pelatihan"`
-	IdLemdik                 string   `json:"IdLemdik"`
+	IdLemdik                 string `json:"IdLemdik"`
 	KodePelatihan            string `json:"KodePelatihan"`
 	NamaPelatihan            string `json:"NamaPelatihan"`
 	PenyelenggaraPelatihan   string `json:"PenyelenggaraPelatihan"`
@@ -23,9 +23,9 @@ type Pelatihan struct {
 	DukunganProgramTerobosan string `json:"DukunganProgramTerobosan"`
 	TanggalMulaiPelatihan    string `json:"TanggalMulaiPelatihan"`
 	TanggalBerakhirPelatihan string `json:"TanggalBerakhirPelatihan"`
-	HargaPelatihan           string    `json:"HargaPelatihan"`
+	HargaPelatihan           string `json:"HargaPelatihan"`
 	Instruktur               string `json:"instruktur"`
-	FotoPelatihan string	
+	FotoPelatihan            string
 	Status                   string `json:"status"`
 	MemoPusat                string `json:"memo_pusat"`
 	SilabusPelatihan         string `json:"silabus_pelatihan"`
@@ -46,18 +46,18 @@ type Pelatihan struct {
 
 func CreatePelatihan(c *fiber.Ctx) error {
 
-	//Pakai JWT
+	//Pake Role Super admin/ admin pusat
+	id_admin, _ := c.Locals("id_admin").(int)
+	role, _ := c.Locals("role").(string)
+	names, _ := c.Locals("name").(string)
+
+	tools.ValidationJwtLemdik(c, role, id_admin, names)
 
 	//Foto terlebih dahulu
-
 
 	file, err := c.FormFile("photo_pelatihan")
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"Message": "Failed to retrieve file", "Error": err.Error()})
-	}
-	// Simpan file ke dalam direktori static/merchant
-	if err := c.SaveFile(file, "public/static/pelatihan/"+strings.ReplaceAll(file.Filename, " ", "")); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save file", "Error": err.Error()})
 	}
 
 	//Inputan Biasa
@@ -65,16 +65,16 @@ func CreatePelatihan(c *fiber.Ctx) error {
 	if err := c.BodyParser(&request); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"Message": "Failed to parse request body", "Error": err.Error()})
 	}
-	
+
 	fmt.Println(request)
 
 	newPelatihan := entity.Pelatihan{
-		IdLemdik:                 uint(tools.StringToInt(request.IdLemdik)),
+		IdLemdik:                 uint(id_admin),
 		KodePelatihan:            request.KodePelatihan,
 		NamaPelatihan:            request.NamaPelatihan,
 		PenyelenggaraPelatihan:   request.PenyelenggaraPelatihan,
 		DetailPelatihan:          request.DetailPelatihan,
-		FotoPelatihan: strings.ReplaceAll(file.Filename, " ", ""),
+		FotoPelatihan:            strings.ReplaceAll(file.Filename, " ", ""),
 		JenisPelatihan:           request.JenisPelatihan,
 		BidangPelatihan:          request.BidangPelatihan,
 		DukunganProgramTerobosan: request.DukunganProgramTerobosan,
@@ -100,7 +100,6 @@ func CreatePelatihan(c *fiber.Ctx) error {
 		UpdateAt:                 tools.TimeNowJakarta(),
 	}
 
-	fmt.Println(request.IdLemdik)
 
 	tx := database.DB.Begin()
 	defer func() {
@@ -119,6 +118,20 @@ func CreatePelatihan(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to commit transaction", "Error": err.Error()})
 	}
 
+	//tampabih sarpras 
+
+	
+
+
+
+
+	//update id sarprsanya 
+
+	// Simpan file ke dalam direktori static/merchant
+	if err := c.SaveFile(file, "public/static/pelatihan/"+strings.ReplaceAll(newPelatihan.NamaPelatihan, " ", "")); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save file", "Error": err.Error()})
+	}
+
 	return c.JSON(fiber.Map{"Message": "Successfully Add Pelatihan"})
 
 }
@@ -129,19 +142,18 @@ func GetPelatihan(c *fiber.Ctx) error {
 	baseUrl := viper.GetString("web.baseUrl")
 
 	//ambil By Id
-	id:= c.Query("id")
-	if id != "" {	
+	id := c.Query("id")
+	if id != "" {
 
 		var pelatihan entity.Pelatihan
 
-
-		database.DB.Where("id_Pelatihan = ?", id).Find(&pelatihan)
+		database.DB.Where("id_pelatihan = ?", id).Find(&pelatihan)
 
 		pelatihan.FotoPelatihan = baseUrl + "/public/static/pelatihan/" + pelatihan.FotoPelatihan
 		//jangan lupa filter
 
 		return c.JSON(fiber.Map{
-			"Pesan":"",
+			"Pesan": pelatihan,
 		})
 	}
 	//Bikin filter berdasarkan
@@ -151,13 +163,11 @@ func GetPelatihan(c *fiber.Ctx) error {
 
 	var pelatihan []entity.Pelatihan
 
-
 	database.DB.Find(&pelatihan)
 
-	for i, _:= range pelatihan {
-		pelatihan[i].FotoPelatihan = baseUrl+"/public/static/pelatihan/" + pelatihan[i].FotoPelatihan
+	for i, _ := range pelatihan {
+		pelatihan[i].FotoPelatihan = baseUrl + "/public/static/pelatihan/" + pelatihan[i].FotoPelatihan
 	}
-
 
 	return c.JSON(fiber.Map{
 		"Pesan": "Sukses Mengambil Data",

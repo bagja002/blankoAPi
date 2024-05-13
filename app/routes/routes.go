@@ -16,24 +16,37 @@ func SetupRoutesFiber(app *fiber.App){
     })
 
 	lemdik:= app.Group("/lemdik")
+	users := app.Group("/users")
 	//adminPusat := app.Group("/adminpusat")
 	app.Get("/test",controllers.CreateUser)
 
+	//Users Area
+	users.Post("/registerUser", controllers.CreateUser)
+	users.Post("/login", controllers.LoginUsers)
+	users.Get("/getUsersById", middleware.JwtProtect(), controllers.GetUserByID)
+	users.Put("/updateUsers", middleware.JwtProtect(), controllers.UpdateUser)
+
+
+
 	//lemdik Area 
 	//Pelatihan 
-	lemdik.Post("/createPelatihan", controllers.CreatePelatihan)
+	lemdik.Post("/createPelatihan", middleware.JwtProtect(),controllers.CreatePelatihan)
 	lemdik.Get("/getPelatihan", controllers.GetPelatihan)
 	lemdik.Post("/login", controllers.LoginLemdik)
+
+
+
+
+	//Sarpras
+	lemdik.Post("/createSarpras", middleware.JwtProtect(), controllers.CreateSarpras)
+	lemdik.Get("/getSarpras", middleware.JwtProtect(),controllers.GetSarpras )
 
 
 
 	//super admin
 	//Create User area
 	SuperAdmin:= app.Group("/superadmin")
-
 	SuperAdmin.Post("/regiterLemdik",middleware.JwtProtect(), controllers.RegisterLemdik)
-
-
 	SuperAdmin.Post("/login", controllers.SuperAdminLogin)
 
 
