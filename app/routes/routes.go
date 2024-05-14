@@ -26,7 +26,7 @@ func SetupRoutesFiber(app *fiber.App){
 	users.Get("/getUsersById", middleware.JwtProtect(), controllers.GetUserByID)
 	users.Put("/updateUsers", middleware.JwtProtect(), controllers.UpdateUser)
 
-
+	users.Get("/test", controllers.TestPreloadPencapaian)
 
 	//lemdik Area 
 	//Pelatihan 

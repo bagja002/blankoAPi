@@ -37,4 +37,5 @@ type Pelatihan struct{
 
 	CreateAt string 
 	UpdateAt string
+	SarprasPelatihan []SarprasPelatihan `gorm:"foreignKey:IdPelatihan"`
 }

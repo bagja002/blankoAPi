@@ -10,6 +10,8 @@ type Sarpras struct{
 	Jenis string
 	CreateAt string
 	UpdateAt string
+
+	Sarprasatih []SarprasPelatihan `gorm:"foreignKey:IdSarpras"`
 }
 //Perlemdik
 type SarprasPelatihan struct{
@@ -17,5 +19,7 @@ type SarprasPelatihan struct{
 	IdPelatihan uint 
 	IdLemdik uint 
 	IdSarpras uint 
+	
+	
 	
 }

@@ -44,6 +44,20 @@ type Pelatihan struct {
 	UpdateAt                 string `json:"updated_at"`
 }
 
+func TestPreloadPencapaian(c *fiber.Ctx) error {
+
+	var Pelatihan entity.Pelatihan
+
+	id := c.Query("id")
+
+	database.DB.Preload("SarprasPelatihan").Where("id_pelatihan = ?", id).Find(&Pelatihan)
+
+	return c.JSON(fiber.Map{
+		"Pesan": "Sukses",
+		"data":  Pelatihan,
+	})
+}
+
 func CreatePelatihan(c *fiber.Ctx) error {
 
 	//Pake Role Super admin/ admin pusat
@@ -94,12 +108,11 @@ func CreatePelatihan(c *fiber.Ctx) error {
 		JenisSertifikat:          request.JenisSertifikat,
 		TtdSertifikat:            request.TtdSertifikat,
 		NoSertifikat:             request.NoSertifikat,
-		IdSaranaPrasarana:        request.IdSaranaPrasarana,
-		IdKonsumsi:               request.IdKonsumsi,
-		CreateAt:                 tools.TimeNowJakarta(),
-		UpdateAt:                 tools.TimeNowJakarta(),
-	}
 
+		IdKonsumsi: request.IdKonsumsi,
+		CreateAt:   tools.TimeNowJakarta(),
+		UpdateAt:   tools.TimeNowJakarta(),
+	}
 
 	tx := database.DB.Begin()
 	defer func() {
@@ -118,14 +131,31 @@ func CreatePelatihan(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to commit transaction", "Error": err.Error()})
 	}
 
-	//tampabih sarpras 
+	//CEK LALO HASILNYA ITU TRUE
+	//tambahkan pelatihan
 
-	
+	//tampabih sarpras
 
+	id_sarpras := request.IdSaranaPrasarana
 
+	list_id_sarpras := strings.Split(id_sarpras, ",")
 
+	if id_sarpras != "" {
+		for _, lis_id := range list_id_sarpras {
+			newSarprasPelatihan := entity.SarprasPelatihan{
+				IdPelatihan: newPelatihan.IdPelatihan,
+				IdLemdik:    uint(id_admin),
+				IdSarpras:   uint(tools.StringToInt(lis_id)),
+			}
 
-	//update id sarprsanya 
+			if err := database.DB.Create(&newSarprasPelatihan).Error; err != nil {
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Gagal Nambahin prass", "Error": err.Error()})
+			}
+		}
+	}
+	//perulangan list
+
+	//update id sarprsanya
 
 	// Simpan file ke dalam direktori static/merchant
 	if err := c.SaveFile(file, "public/static/pelatihan/"+strings.ReplaceAll(newPelatihan.NamaPelatihan, " ", "")); err != nil {
@@ -142,28 +172,26 @@ func GetPelatihan(c *fiber.Ctx) error {
 	baseUrl := viper.GetString("web.baseUrl")
 
 	//ambil By Id
+
 	id := c.Query("id")
-	if id != "" {
-
-		var pelatihan entity.Pelatihan
-
-		database.DB.Where("id_pelatihan = ?", id).Find(&pelatihan)
-
-		pelatihan.FotoPelatihan = baseUrl + "/public/static/pelatihan/" + pelatihan.FotoPelatihan
-		//jangan lupa filter
-
-		return c.JSON(fiber.Map{
-			"Pesan": pelatihan,
-		})
-	}
-	//Bikin filter berdasarkan
-	//Bidang Pelatihan
-	//Penyelenggara Pelatihan
-	//Pelaksanaan Pelatihan
+	bidangPelatihan := c.Query("bidang_pelatihan")
+	penyelenggaraPelatihan := c.Query("penyelenggara_pelatihan")
 
 	var pelatihan []entity.Pelatihan
 
-	database.DB.Find(&pelatihan)
+	queryBase := database.DB
+
+	if id != "" {
+		queryBase = queryBase.Where("id_pelatihan = ?", id)
+	}
+	if bidangPelatihan != "" {
+		queryBase = queryBase.Where("bidang_pelatihan = ?", bidangPelatihan)
+	}
+	if penyelenggaraPelatihan != "" {
+		queryBase = queryBase.Where("penyelenggara_pelatihan = ?", penyelenggaraPelatihan)
+	}
+
+	queryBase.Find(&pelatihan)
 
 	for i, _ := range pelatihan {
 		pelatihan[i].FotoPelatihan = baseUrl + "/public/static/pelatihan/" + pelatihan[i].FotoPelatihan
