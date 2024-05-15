@@ -3,7 +3,7 @@
       "name": "Marline Engine"
     },
     "web": {
-      "baseUrl":"http://103.177.176.202:8000",
+      "baseUrl":"https://api-elaut.ikulatluh.cloud/",
       "prefork": false,
       "port": ":8000"
     },
