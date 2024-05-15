@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"strings"
 	"template/app/entity"
 	"template/pkg/config"
@@ -39,9 +40,19 @@ type Pelatihan struct {
 	TtdSertifikat            string `json:"ttd_sertifikat"`
 	NoSertifikat             string `json:"no_sertifikat"`
 	IdSaranaPrasarana        string `json:"id_sarana_prasarana"`
+
+	
+	
 	IdKonsumsi               string `json:"id_konsumsi"`
 	CreateAt                 string `json:"created_at"`
 	UpdateAt                 string `json:"updated_at"`
+
+
+	//Penambahan Matery 
+	NamaMateri string `json:"NamaMateri"`
+	Deskripsi string `json:"Deskripsi"`
+	JamTeory string `json:"JamTeory"`
+	JamPraktek string `json:"JamPraktek"`
 }
 
 func TestPreloadPencapaian(c *fiber.Ctx) error {
@@ -153,12 +164,13 @@ func CreatePelatihan(c *fiber.Ctx) error {
 			}
 		}
 	}
-	//perulangan list
+	
+	//Menambahkan Masukan materi 
 
-	//update id sarprsanya
 
 	// Simpan file ke dalam direktori static/merchant
 	if err := c.SaveFile(file, "public/static/pelatihan/"+strings.ReplaceAll(newPelatihan.NamaPelatihan, " ", "")); err != nil {
+		log.Println("Berubah")
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save file", "Error": err.Error()})
 	}
 

@@ -26,6 +26,8 @@ type Users struct{
 	Status 	string
 	CreateAt string
 	UpdateAt string
+
+	UsersPelatihan []UsersPelatihan `gorm:"foreignKey:IdUsers"`
 }
 
 //Auto generate

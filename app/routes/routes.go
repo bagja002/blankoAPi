@@ -28,6 +28,10 @@ func SetupRoutesFiber(app *fiber.App){
 
 	users.Get("/test", controllers.TestPreloadPencapaian)
 
+	//User Post Add Pelatihan 
+	users.Post("/addPelatihan", middleware.JwtProtect(), controllers.CreateUserPelatihan)
+
+
 	//lemdik Area 
 	//Pelatihan 
 	lemdik.Post("/createPelatihan", middleware.JwtProtect(),controllers.CreatePelatihan)

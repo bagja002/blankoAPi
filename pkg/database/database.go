@@ -46,15 +46,22 @@ func Connect() {
 	connection.SetMaxOpenConns(maxConnection)
 	connection.SetConnMaxLifetime(time.Second * time.Duration(maxLifeTimeConnection))
 
-	db.AutoMigrate(
-		&entity.Users{},
-		&entity.AdminPusat{},
-		&entity.Lemdiklat{},
-		&entity.SuperAdmin{},
-		&entity.Pelatihan{},
-		&entity.Sarpras{},
-		&entity.SarprasPelatihan{},
-	)
+	err = db.AutoMigrate(
+       &entity.Users{},
+        &entity.AdminPusat{},
+        &entity.Lemdiklat{},
+        &entity.SuperAdmin{},
+        &entity.Pelatihan{},
+        &entity.MateriPelatihan{},
+        &entity.Sarpras{},
+        &entity.SarprasPelatihan{},
+        &entity.UsersPelatihan{},
+		
+    )
+    if err != nil {
+        log.Fatalf("failed to auto-migrate: %v", err)
+    }
+
 
 	// Cek apakah akun Super Admin sudah terbuat
 	var existingSuperAdmin entity.SuperAdmin

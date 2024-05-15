@@ -19,7 +19,22 @@ type SarprasPelatihan struct{
 	IdPelatihan uint 
 	IdLemdik uint 
 	IdSarpras uint 
+	CreteAt string
+	UpdateAt string
 	
 	
 	
+}
+
+
+
+//Table Prasarana User Pelatihan 
+type UsersSarprasPelatihan struct{
+	IdUsersSarprasPelatihan uint `gorm:"primary_key;auto_increment"`
+	IdPelatihan uint 
+	IdIdUserPelatihan uint 
+	IdSarpras uint 
+	CreteAt string
+	UpdateAt string
+
 }
