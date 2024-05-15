@@ -169,7 +169,7 @@ func CreatePelatihan(c *fiber.Ctx) error {
 
 
 	// Simpan file ke dalam direktori static/merchant
-	if err := c.SaveFile(file, "public/static/pelatihan/"+strings.ReplaceAll(newPelatihan.NamaPelatihan, " ", "")); err != nil {
+	if err := c.SaveFile(file, "public/static/pelatihan/"+strings.ReplaceAll(file.Filename, " ", "")); err != nil {
 		log.Println("Berubah")
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save file", "Error": err.Error()})
 	}
