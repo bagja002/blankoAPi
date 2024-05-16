@@ -122,6 +122,9 @@ func GetUserByID(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
+
+
+
 // Get all users
 func GetAllUsers(c *fiber.Ctx) error {
 

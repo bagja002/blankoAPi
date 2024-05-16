@@ -27,7 +27,7 @@ type Users struct{
 	CreateAt string
 	UpdateAt string
 
-	UsersPelatihan []UsersPelatihan `gorm:"foreignKey:IdUsers"`
+	Pelatihan []UsersPelatihan `gorm:"foreignKey:IdUsers"`
 }
 
 //Auto generate

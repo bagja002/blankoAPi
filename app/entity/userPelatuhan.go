@@ -14,17 +14,16 @@ type UsersPelatihan struct{
 	
 	//Nilai Materi 
 	StatusPembayaran string  //Pending dan Void
+	MetodoPembayaran string
 	WaktuPembayaran string
 	Keterangan string
 	IsActice string
 	CreteAt string
 	UpdateAt string
 
-	
 
 
 
-	//UsersSarpras []UsersSarpras
 
 
 }

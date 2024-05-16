@@ -38,9 +38,10 @@ type Pelatihan struct {
 	UpdateAt          string
 	SarprasPelatihan  []SarprasPelatihan `gorm:"foreignKey:IdPelatihan"`
 	MateriPelatihan []MateriPelatihan `gorm:"foreignKey:IdPelatihan"`
-
-	UsersPelatihan []UsersPelatihan `gorm:"foreignKey:IdPelatihan"`
+	UserPelatihan []UsersPelatihan `gorm:"foreignKey:IdPelatihan"`
 }
+
+
 
 type MateriPelatihan struct {
 	IdMateriPelatihan uint `gorm:"primary_key;auto_increment"`

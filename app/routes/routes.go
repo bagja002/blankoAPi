@@ -20,6 +20,10 @@ func SetupRoutesFiber(app *fiber.App){
 	//adminPusat := app.Group("/adminpusat")
 	app.Get("/test",controllers.CreateUser)
 
+	app.Get("/testGetPelatihan", controllers.GetPelatihanByUser)
+	//
+	app.Get("/Tests", controllers.GetUsersByPelatihan)
+
 	//Users Area
 	users.Post("/registerUser", controllers.CreateUser)
 	users.Post("/login", controllers.LoginUsers)
