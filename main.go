@@ -1,10 +1,10 @@
 package main
 
 import (
-	
 	"template/app/routes"
 	"template/pkg/config"
 	"template/pkg/database"
+	"template/pkg/tools"
 
 	//"backend-elaut/pkg/config"
 	"log"
@@ -17,6 +17,7 @@ import (
 
 
 func main(){
+	tools.CreateFolder()
 	viperConfig := config.NewViper()
 
 	file, err := os.OpenFile("app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
