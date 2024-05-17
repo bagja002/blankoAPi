@@ -1,10 +1,11 @@
 package controllers
 
 import (
-	"fmt"
+
 	"log"
 	"strings"
 	"template/app/entity"
+	"template/app/models"
 	"template/pkg/config"
 	"template/pkg/database"
 	"template/pkg/tools"
@@ -12,48 +13,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type Pelatihan struct {
-	IdPelatihan              uint   `gorm:"primary_key;auto_increment" json:"id_pelatihan"`
-	IdLemdik                 string `json:"IdLemdik"`
-	KodePelatihan            string `json:"KodePelatihan"`
-	NamaPelatihan            string `json:"NamaPelatihan"`
-	PenyelenggaraPelatihan   string `json:"PenyelenggaraPelatihan"`
-	DetailPelatihan          string `json:"DetailPelatihan"`
-	JenisPelatihan           string `json:"JenisPelatihan"`
-	BidangPelatihan          string `json:"BidangPelatihan"`
-	DukunganProgramTerobosan string `json:"DukunganProgramTerobosan"`
-	TanggalMulaiPelatihan    string `json:"TanggalMulaiPelatihan"`
-	TanggalBerakhirPelatihan string `json:"TanggalBerakhirPelatihan"`
-	HargaPelatihan           string `json:"HargaPelatihan"`
-	Instruktur               string `json:"instruktur"`
-	FotoPelatihan            string
-	Status                   string `json:"status"`
-	MemoPusat                string `json:"memo_pusat"`
-	SilabusPelatihan         string `json:"silabus_pelatihan"`
-	LokasiPelatihan          string `json:"lokasi_pelatihan"`
-	PelaksanaanPelatihan     string `json:"pelaksanaan_pelatihan"`
-	UjiKompotensi            string `json:"uji_kompetensi"`
-	KoutaPelatihan           string `json:"kouta_pelatihan"`
-	AsalPelatihan            string `json:"asal_pelatihan"`
-	AsalSertifikat           string `json:"asal_sertifikat"`
-	JenisSertifikat          string `json:"jenis_sertifikat"`
-	TtdSertifikat            string `json:"ttd_sertifikat"`
-	NoSertifikat             string `json:"no_sertifikat"`
-	IdSaranaPrasarana        string `json:"id_sarana_prasarana"`
 
-	
-	
-	IdKonsumsi               string `json:"id_konsumsi"`
-	CreateAt                 string `json:"created_at"`
-	UpdateAt                 string `json:"updated_at"`
-
-
-	//Penambahan Matery 
-	NamaMateri string `json:"NamaMateri"`
-	Deskripsi string `json:"Deskripsi"`
-	JamTeory string `json:"JamTeory"`
-	JamPraktek string `json:"JamPraktek"`
-}
 
 func TestPreloadPencapaian(c *fiber.Ctx) error {
 
@@ -86,12 +46,11 @@ func CreatePelatihan(c *fiber.Ctx) error {
 	}
 
 	//Inputan Biasa
-	var request Pelatihan
+	var request models.Pelatihan
 	if err := c.BodyParser(&request); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"Message": "Failed to parse request body", "Error": err.Error()})
 	}
 
-	fmt.Println(request)
 
 	newPelatihan := entity.Pelatihan{
 		IdLemdik:                 uint(id_admin),

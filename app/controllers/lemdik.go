@@ -97,23 +97,65 @@ func LoginLemdik(c *fiber.Ctx)error{
 
 func GetLemdik(c *fiber.Ctx)error{
 
-	//id:= c.Params("id")
+
+	//Pemberian Akses Admin Pusat dan juga Admin lemdik 	
+	id:= c.Query("id")
+	var lemdik entity.Lemdiklat
+	database.DB.Where("id_lemdik = ?", id).Find(&lemdik)
 
 
 	return c.JSON(fiber.Map{
-		"Pesan":"",
-		"data":"",
+		"Pesan":"Sukses Mengambil Data",
+		"data":lemdik,
 	})
 }
 
 func UpdateLemdik(c *fiber.Ctx)error{
 
+	id_admin, _ := c.Locals("id_admin").(int)
+	role, _ := c.Locals("role").(string)
+	names, _ := c.Locals("name").(string)
+
+	tools.ValidationJwtLemdik(c ,role,id_admin,names)
 
 
+	var lemdik entity.Lemdiklat
+
+	database.DB.Where("id_lemdik = ?", id_admin).Find(&lemdik)
+
+	var data map[string]string
+	var existingEmail entity.Lemdiklat
+	email := data["email"]
+
+	err := database.DB.Where("email = ?", email).Find(&existingEmail).Error
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"Message": err,
+		})
+	}
+
+	//cek email
+	if existingEmail.Email == email {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"Message": "This Email is Register",
+		})
+	}
+
+	update:= entity.Lemdiklat{
+		NamaLemdik: data["nama_lemdik"],
+		NoTelpon: tools.StringToInt(data["no_telpon"]),
+		Email: email,
+		Password: tools.GeneratePassword(data["password"]),
+		Alamat: data["alamat"],
+		Deskripsi: data["deskripsi"],
+		CreateAt: tools.TimeNowJakarta(),
+	}
+
+	database.DB.Model(&lemdik).Updates(&update)
 
 	return c.JSON(fiber.Map{
-		"Pesan":"",
-
+		"Pesan":"Sukses Update Data",
+		"Data":lemdik,
 	})
 }
 

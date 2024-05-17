@@ -20,9 +20,9 @@ func SetupRoutesFiber(app *fiber.App){
 	//adminPusat := app.Group("/adminpusat")
 	app.Get("/test",controllers.CreateUser)
 
-	app.Get("/testGetPelatihan", controllers.GetPelatihanByUser)
+	app.Get("/getUserPelatihan", controllers.GetPelatihanByUser)
 	//
-	app.Get("/Tests", controllers.GetUsersByPelatihan)
+	app.Get("/getPelatihanUser", controllers.GetUsersByPelatihan)
 
 	//Users Area
 	users.Post("/registerUser", controllers.CreateUser)
@@ -37,10 +37,13 @@ func SetupRoutesFiber(app *fiber.App){
 
 
 	//lemdik Area 
+	lemdik.Post("/login", controllers.LoginLemdik)
+	lemdik.Get("/getLemdik", controllers.GetLemdik)
+	lemdik.Put("/update", controllers.UpdateLemdik)
 	//Pelatihan 
 	lemdik.Post("/createPelatihan", middleware.JwtProtect(),controllers.CreatePelatihan)
 	lemdik.Get("/getPelatihan", controllers.GetPelatihan)
-	lemdik.Post("/login", controllers.LoginLemdik)
+	
 
 
 

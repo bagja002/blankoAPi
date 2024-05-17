@@ -13,3 +13,5 @@ func GeneratePassword(p string)string{
 	}
 	return string(password)
 }
+
+
