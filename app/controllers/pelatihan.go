@@ -176,7 +176,23 @@ func GetPelatihan(c *fiber.Ctx) error {
 
 func UpdatePelatihan(c *fiber.Ctx) error {
 
-	//id:= c.Query("id")
+	id:= c.Query("id")
+
+
+	var pelatihan entity.Pelatihan
+
+
+
+	database.DB.Where("id_pelatihan = ?", id).Find(&pelatihan)
+
+
+	update:= entity.Pelatihan{
+		
+
+	}
+
+
+
 
 	return c.JSON(fiber.Map{
 		"Pesan": "Sukses Update Pelatihan",

@@ -199,7 +199,7 @@ func UpdateUser(c *fiber.Ctx) error {
 			"Message": "User not found",
 		})
 	}
-
+	//untuk delete file
 	pathKK := "public/static/profile/kk/" +user.KK
 	pathKTP := "public/static/profile/ktp/"+user.Ktp
 	pathPoto := "public/static/profile/fotoProfile/"+ user.Foto
@@ -252,19 +252,19 @@ func UpdateUser(c *fiber.Ctx) error {
 	}
 
 	if err := c.SaveFile(photoProfile, "public/static/profile/fotoProfile/"+strings.ReplaceAll(photoProfile.Filename, " ", "")); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save file", "Error": err.Error()})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save fotoProfile", "Error": err.Error()})
 	}
 	if err := c.SaveFile(KK, "public/static/profile/kk/"+strings.ReplaceAll(KK.Filename, " ", "")); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save file", "Error": err.Error()})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save kk", "Error": err.Error()})
 	}
 	if err := c.SaveFile(Ktp, "public/static/profile/ktp/"+strings.ReplaceAll(Ktp.Filename, " ", "")); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save file", "Error": err.Error()})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save ktp", "Error": err.Error()})
 	}
 	if err := c.SaveFile(ijasah, "public/static/profile/ijazah/"+strings.ReplaceAll(ijasah.Filename, " ", "")); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save file", "Error": err.Error()})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save ijazah", "Error": err.Error()})
 	}
 	if err := c.SaveFile(suratSehat, "public/static/profile/suratSehat/"+strings.ReplaceAll(suratSehat.Filename, " ", "")); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save file", "Error": err.Error()})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save suratSehat", "Error": err.Error()})
 	}
 
 	return c.JSON(fiber.Map{

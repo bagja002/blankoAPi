@@ -30,6 +30,10 @@ type Pelatihan struct {
 	TtdSertifikat   string //Pilih Penandatangan
 	NoSertifikat    string //Nomor Sertifikat Perpelatihan
 
+	//Status Aproval 
+	StatusApproval string
+	//File
+
 	//Penambahan Paket Penginapan
 	IdSaranaPrasarana string
 	IdKonsumsi        string
