@@ -1,7 +1,6 @@
 package controllers
 
 import (
-
 	"log"
 	"strings"
 	"template/app/entity"
@@ -12,8 +11,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 )
-
-
 
 func TestPreloadPencapaian(c *fiber.Ctx) error {
 
@@ -50,7 +47,6 @@ func CreatePelatihan(c *fiber.Ctx) error {
 	if err := c.BodyParser(&request); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"Message": "Failed to parse request body", "Error": err.Error()})
 	}
-
 
 	newPelatihan := entity.Pelatihan{
 		IdLemdik:                 uint(id_admin),
@@ -123,9 +119,8 @@ func CreatePelatihan(c *fiber.Ctx) error {
 			}
 		}
 	}
-	
-	//Menambahkan Masukan materi 
 
+	//Menambahkan Masukan materi
 
 	// Simpan file ke dalam direktori static/merchant
 	if err := c.SaveFile(file, "public/static/pelatihan/"+strings.ReplaceAll(file.Filename, " ", "")); err != nil {
@@ -176,23 +171,11 @@ func GetPelatihan(c *fiber.Ctx) error {
 
 func UpdatePelatihan(c *fiber.Ctx) error {
 
-	id:= c.Query("id")
-
+	id := c.Query("id")
 
 	var pelatihan entity.Pelatihan
 
-
-
 	database.DB.Where("id_pelatihan = ?", id).Find(&pelatihan)
-
-
-	update:= entity.Pelatihan{
-		
-
-	}
-
-
-
 
 	return c.JSON(fiber.Map{
 		"Pesan": "Sukses Update Pelatihan",

@@ -30,7 +30,7 @@ type Pelatihan struct {
 	TtdSertifikat   string //Pilih Penandatangan
 	NoSertifikat    string //Nomor Sertifikat Perpelatihan
 
-	//Status Aproval 
+	//Status Aproval
 	StatusApproval string
 	//File
 
@@ -40,21 +40,23 @@ type Pelatihan struct {
 	ModuleMateri      string //file
 	CreateAt          string
 	UpdateAt          string
-	SarprasPelatihan  []SarprasPelatihan `gorm:"foreignKey:IdPelatihan"`
-	MateriPelatihan []MateriPelatihan `gorm:"foreignKey:IdPelatihan"`
-	UserPelatihan []UsersPelatihan `gorm:"foreignKey:IdPelatihan"`
+
+	PemberitahuanDiterima                                               string
+	SuratPemberitahuan                                                  string //pdf
+	CatatanPemberitahuanByPusat                                         string
+	PenerbitanSertifikatDiterima, BeritaAcara, CatatanPenerbitanByPusat string
+	SarprasPelatihan                                                    []SarprasPelatihan `gorm:"foreignKey:IdPelatihan"`
+	MateriPelatihan                                                     []MateriPelatihan  `gorm:"foreignKey:IdPelatihan"`
+	UserPelatihan                                                       []UsersPelatihan   `gorm:"foreignKey:IdPelatihan"`
 }
-
-
 
 type MateriPelatihan struct {
 	IdMateriPelatihan uint `gorm:"primary_key;auto_increment"`
-	IdPelatihan uint 
-	NamaMateri        string 
-	Deskripsi 			string 
-	JamTeory string
-	JamPraktek string
-	CreateAt string
-	UpdateAt string 
-
+	IdPelatihan       uint
+	NamaMateri        string
+	Deskripsi         string
+	JamTeory          string
+	JamPraktek        string
+	CreateAt          string
+	UpdateAt          string
 }
