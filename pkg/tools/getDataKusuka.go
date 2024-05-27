@@ -61,6 +61,7 @@ func GetDataKusuka(c *fiber.Ctx) error {
 		})
 	}
 	fmt.Println(apiResp)
+	fmt.Println("Token", apiResp.Data.Token)
 	// Check if token is retrieved successfully
 	if apiResp.Message != "Sukses" {
 		return c.Status(500).JSON(fiber.Map{
