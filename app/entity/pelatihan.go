@@ -24,6 +24,8 @@ type Pelatihan struct {
 	KoutaPelatihan           string
 	AsalPelatihan            string //Masyarakat Pelatihan
 
+	//yang dikatergorikan file adalah
+
 	//SECTION SERTIFIKAT
 	AsalSertifikat  string //JDPT/BPSDM
 	JenisSertifikat string //teknis, kepelautan , umum
