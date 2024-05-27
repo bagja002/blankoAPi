@@ -2,6 +2,7 @@ package tools
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
@@ -59,7 +60,7 @@ func GetDataKusuka(c *fiber.Ctx) error {
 			"Pesan": "gagal mengurai response JSON",
 		})
 	}
-
+	fmt.Println(apiResp.Status)
 	// Check if token is retrieved successfully
 	if apiResp.Status != "success" {
 		return c.Status(500).JSON(fiber.Map{
