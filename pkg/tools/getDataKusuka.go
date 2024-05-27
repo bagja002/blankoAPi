@@ -81,13 +81,13 @@ func GetDataKusuka(c *fiber.Ctx) error {
 	// Send request
 	if err := fasthttp.Do(req, resp); err != nil {
 		log.Println("Error making request to API:", err)
-		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
+		return c.Status(fiber.StatusInternalServerError).SendString("Kenapa ini")
 	}
 
 	// Check response status code
 	if resp.StatusCode() != fasthttp.StatusOK {
 		log.Println("Non-OK status code from API:", resp.StatusCode())
-		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
+		return c.Status(fiber.StatusInternalServerError).SendString("respon pokoknya eoro")
 	}
 
 	// Send response to client as JSON
