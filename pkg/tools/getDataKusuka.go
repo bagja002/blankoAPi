@@ -72,7 +72,7 @@ func GetDataKusuka(c *fiber.Ctx) error {
 	// Use the token to get data from Kusuka API
 	nomor := c.Query("nomor_kusuka")
 	apiURL := baseUrl + "Kusuka?nomor_kusuka=" + nomor
-
+	fmt.Println(apiURL)
 	// Create GET request for Kusuka data
 	req.SetRequestURI(apiURL)
 	req.Header.SetMethod(fasthttp.MethodGet)
