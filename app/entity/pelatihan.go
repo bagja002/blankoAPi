@@ -4,7 +4,7 @@ type Pelatihan struct {
 	IdPelatihan              uint `gorm:"primary_key;auto_increment"`
 	IdLemdik                 uint
 	KodePelatihan            string
-	NamaPelatihan            string //Judul Pelatihan
+	NamaPelatihan            string `json:"NamaPelatihan"` //Judul Pelatihan
 	PenyelenggaraPelatihan   string //Penyengeggara oelatihan
 	DetailPelatihan          string //Deskripsi Pelatihan
 	FotoPelatihan            string

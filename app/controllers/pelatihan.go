@@ -259,12 +259,56 @@ func UpdatePelatihan(c *fiber.Ctx) error {
 
 	}
 
-	/*Yang biasanya
+	//Yang biasanya
 	var request entity.Pelatihan
+	if err := c.BodyParser(&request); err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"pesan": "gagal reques",
+		})
+	}
 
-	updates := entity.Pelatihan{}
+	updates := entity.Pelatihan{
+		NamaPelatihan:            request.NamaPelatihan,
+		PenyelenggaraPelatihan:   request.PenyelenggaraPelatihan,
+		DetailPelatihan:          request.DetailPelatihan,
+		JenisPelatihan:           request.JenisPelatihan,
+		BidangPelatihan:          request.BidangPelatihan,
+		DukunganProgramTerobosan: request.DukunganProgramTerobosan,
+		TanggalMulaiPelatihan:    request.TanggalMulaiPelatihan,
+		TanggalBerakhirPelatihan: request.TanggalBerakhirPelatihan,
+		HargaPelatihan:           request.HargaPelatihan,
+		Instruktur:               request.Instruktur,
+		Status:                   request.Status,
+		MemoPusat:                request.MemoPusat,
+		SilabusPelatihan:         request.SilabusPelatihan,
+		LokasiPelatihan:          request.LokasiPelatihan,
+		PelaksanaanPelatihan:     request.PelaksanaanPelatihan,
+		UjiKompotensi:            request.UjiKompotensi,
+		KoutaPelatihan:           request.KoutaPelatihan,
+		AsalPelatihan:            request.AsalPelatihan,
+		AsalSertifikat:           pelatihan.AsalSertifikat,
+		JenisSertifikat:          request.JenisPelatihan,
+		TtdSertifikat:            request.TtdSertifikat,
+		NoSertifikat:             request.NoSertifikat,
 
-	*/
+		StatusApproval: request.Status,
+
+		UpdateAt: tools.TimeNowJakarta(),
+
+		PemberitahuanDiterima: request.PemberitahuanDiterima,
+
+		CatatanPemberitahuanByPusat:  request.CatatanPemberitahuanByPusat,
+		PenerbitanSertifikatDiterima: request.PenerbitanSertifikatDiterima,
+		CatatanPenerbitanByPusat:     request.CatatanPemberitahuanByPusat,
+	}
+
+	if err := tx.Model(&pelatihan).Where("id_pelatihan = ?", id).Updates(&updates).Error; err != nil {
+		tx.Rollback()
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"pesan": "Gagal memperbarui MonitoringEvaluasi",
+			"error": err.Error(),
+		})
+	}
 
 	if err := tx.Commit().Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
