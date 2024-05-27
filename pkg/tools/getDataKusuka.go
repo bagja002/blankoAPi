@@ -60,7 +60,7 @@ func GetDataKusuka(c *fiber.Ctx) error {
 			"Pesan": "gagal mengurai response JSON",
 		})
 	}
-	fmt.Println(apiResp.Status)
+	fmt.Println(apiResp)
 	// Check if token is retrieved successfully
 	if apiResp.Status != "success" {
 		return c.Status(500).JSON(fiber.Map{
