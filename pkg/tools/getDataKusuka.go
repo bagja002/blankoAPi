@@ -2,7 +2,6 @@ package tools
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
@@ -60,8 +59,7 @@ func GetDataKusuka(c *fiber.Ctx) error {
 			"Pesan": "gagal mengurai response JSON",
 		})
 	}
-	fmt.Println(apiResp)
-	fmt.Println("Token", apiResp.Data.Token)
+
 	// Check if token is retrieved successfully
 	if apiResp.Message != "Sukses" {
 		return c.Status(500).JSON(fiber.Map{
@@ -72,7 +70,7 @@ func GetDataKusuka(c *fiber.Ctx) error {
 	// Use the token to get data from Kusuka API
 	nomor := c.Query("nomor_kusuka")
 	apiURL := baseUrl + "Kusuka?nomor_kusuka=" + nomor
-	fmt.Println(apiURL)
+
 	// Create GET request for Kusuka data
 
 	req1 := fasthttp.AcquireRequest()
@@ -91,9 +89,8 @@ func GetDataKusuka(c *fiber.Ctx) error {
 	}
 
 	// Check response status code
-	fmt.Println(resp1)
+
 	if resp.StatusCode() != fasthttp.StatusOK {
-		fmt.Println("Non-OK status code from API:", resp1.StatusCode())
 		return c.Send(resp1.Body())
 	}
 
