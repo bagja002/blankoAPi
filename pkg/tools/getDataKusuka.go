@@ -85,6 +85,7 @@ func GetDataKusuka(c *fiber.Ctx) error {
 	}
 
 	// Check response status code
+	fmt.Println(resp)
 	if resp.StatusCode() != fasthttp.StatusOK {
 		fmt.Println("Non-OK status code from API:", resp.StatusCode())
 		return c.Status(fiber.StatusInternalServerError).SendString("respon pokoknya eoro")
