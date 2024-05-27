@@ -1,31 +1,89 @@
 package tools
 
 import (
+	"encoding/json"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/valyala/fasthttp"
 )
 
+type RequesToken struct {
+	Username string `form:"username"`
+	Password string `form:"password"`
+}
+
+type ApiResponse struct {
+	Status  string `json:"status"`
+	Message string `json:"message"`
+	Data    struct {
+		Token string `json:"token"`
+	} `json:"data"`
+}
+
 func GetDataKusuka(c *fiber.Ctx) error {
 	// Inisialisasi aplikasi Fiber
-	// URL API eksternal
-	nomor := c.Query("nomor_kusuka")
-	apiURL := "https://statistik.kkp.go.id/api-statistik/index.php/Kusuka?nomor_kusuka=" + nomor
 
-	// Membuat objek request FastHTTP
+	baseUrl := "https://statistik.kkp.go.id/api-statistik/index.php/"
+
+	// Membuat form data
+	args := fasthttp.AcquireArgs()
+	args.Set("username", "bppsdmkp")
+	args.Set("password", "EF700E623E10945FA9B55EBE42139D96")
+
+	// Membuat request POST
 	req := fasthttp.AcquireRequest()
 	defer fasthttp.ReleaseRequest(req)
+	req.SetRequestURI(baseUrl + "Token/create")
+	req.Header.SetMethod(fasthttp.MethodPost)
+	req.SetBodyString(args.String())
+	req.Header.SetContentType("application/x-www-form-urlencoded")
+
+	// Membuat response
+	resp := fasthttp.AcquireResponse()
+	defer fasthttp.ReleaseResponse(resp)
+
+	// Mengirim request
+	if err := fasthttp.Do(req, resp); err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"Pesan": "gagal mengirim request",
+		})
+	}
+
+	// Membaca response dari server
+	responseBody := resp.Body()
+
+	// Mengurai JSON response untuk mendapatkan token
+	var apiResp ApiResponse
+	if err := json.Unmarshal(responseBody, &apiResp); err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"Pesan": "gagal mengurai response JSON",
+		})
+	}
+
+	// Data token apiResp.Data.Token
+
+	var request RequesToken
+	err := c.BodyParser(&request)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"Pesan": "gagal encode",
+		})
+	}
+
+	//Hit Gerate Tokennay
+
+	// URL API eksternal
+	nomor := c.Query("nomor_kusuka")
+	apiURL := baseUrl + "Kusuka?nomor_kusuka=" + nomor
+
+	// Membuat objek request FastHTTP
 
 	// Set method dan URL request
 	req.SetRequestURI(apiURL)
 
 	// Menambahkan header "Token"
-	req.Header.Set("Token", "SjAmrqx5mtSf2RmFGIWUrDxQNyx2odjg")
-
-	// Membuat objek response FastHTTP
-	resp := fasthttp.AcquireResponse()
-	defer fasthttp.ReleaseResponse(resp)
+	req.Header.Set("Token", apiResp.Data.Token)
 
 	// Melakukan permintaan HTTP GET ke API menggunakan FastHTTP
 	if err := fasthttp.Do(req, resp); err != nil {
