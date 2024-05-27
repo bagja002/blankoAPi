@@ -63,14 +63,6 @@ func GetDataKusuka(c *fiber.Ctx) error {
 
 	// Data token apiResp.Data.Token
 
-	var request RequesToken
-	err := c.BodyParser(&request)
-	if err != nil {
-		return c.Status(400).JSON(fiber.Map{
-			"Pesan": "gagal encode",
-		})
-	}
-
 	//Hit Gerate Tokennay
 
 	// URL API eksternal
