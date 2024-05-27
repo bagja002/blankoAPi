@@ -3,6 +3,7 @@ package routes
 import (
 	"template/app/controllers"
 	"template/pkg/middleware"
+	"template/pkg/tools"
 	"template/public/static"
 
 	"github.com/gofiber/fiber/v2"
@@ -13,6 +14,8 @@ func SetupRoutesFiber(app *fiber.App) {
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.Render("welcome.html", fiber.Map{})
 	})
+
+	app.Get("/getDataKusuka", tools.GetDataKusuka)
 
 	lemdik := app.Group("/lemdik")
 	users := app.Group("/users")

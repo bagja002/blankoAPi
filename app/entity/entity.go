@@ -29,8 +29,8 @@ type Users struct {
 	Status              string
 	CreateAt            string
 	UpdateAt            string
-	Ijazah string
-
+	Ijazah              string
+	KusukaUsers         string //True or False
 
 	Pelatihan []UsersPelatihan `gorm:"foreignKey:IdUsers"`
 }

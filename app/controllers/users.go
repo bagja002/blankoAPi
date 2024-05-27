@@ -47,11 +47,12 @@ func CreateUser(c *fiber.Ctx) error {
 	}
 
 	NewUser := entity.Users{
-		Nama:     data["nama"],
-		Nik:      nik,
-		Password: tools.GeneratePassword(data["password"]),
-		NoTelpon: tools.StringToInt(data["no_number"]),
-		CreateAt: tools.TimeNowJakarta(),
+		Nama:        data["nama"],
+		Nik:         nik,
+		Password:    tools.GeneratePassword(data["password"]),
+		NoTelpon:    tools.StringToInt(data["no_number"]),
+		KusukaUsers: data["kusuka_users"],
+		CreateAt:    tools.TimeNowJakarta(),
 	}
 	//Memulai Transaksi
 
@@ -200,11 +201,11 @@ func UpdateUser(c *fiber.Ctx) error {
 		})
 	}
 	//untuk delete file
-	pathKK := "public/static/profile/kk/" +user.KK
-	pathKTP := "public/static/profile/ktp/"+user.Ktp
-	pathPoto := "public/static/profile/fotoProfile/"+ user.Foto
-	pathIzasah := "public/static/profile/ijazah/" +user.Ijazah
-	pathSuratSehat := "public/static/profile/suratSehat/" +user.SuratKesehatan
+	pathKK := "public/static/profile/kk/" + user.KK
+	pathKTP := "public/static/profile/ktp/" + user.Ktp
+	pathPoto := "public/static/profile/fotoProfile/" + user.Foto
+	pathIzasah := "public/static/profile/ijazah/" + user.Ijazah
+	pathSuratSehat := "public/static/profile/suratSehat/" + user.SuratKesehatan
 
 	os.Remove(pathKK)
 	os.Remove(pathKTP)
@@ -241,8 +242,6 @@ func UpdateUser(c *fiber.Ctx) error {
 		Ijazah:              ijasah.Filename,
 		SuratKesehatan:      suratSehat.Filename,
 	}
-
-
 
 	// Save the updated user
 	if err := database.DB.Model(&user).Updates(&update).Error; err != nil {
