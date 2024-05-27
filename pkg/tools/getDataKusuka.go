@@ -74,24 +74,30 @@ func GetDataKusuka(c *fiber.Ctx) error {
 	apiURL := baseUrl + "Kusuka?nomor_kusuka=" + nomor
 	fmt.Println(apiURL)
 	// Create GET request for Kusuka data
-	req.SetRequestURI(apiURL)
-	req.Header.SetMethod(fasthttp.MethodGet)
-	req.Header.Set("Token", apiResp.Data.Token)
+
+	req1 := fasthttp.AcquireRequest()
+	defer fasthttp.ReleaseRequest(req1)
+
+	resp1 := fasthttp.AcquireResponse()
+	defer fasthttp.ReleaseResponse(resp1)
+	req1.SetRequestURI(apiURL)
+	req1.Header.SetMethod(fasthttp.MethodGet)
+	req1.Header.Set("Token", apiResp.Data.Token)
 
 	// Send request
-	if err := fasthttp.Do(req, resp); err != nil {
+	if err := fasthttp.Do(req1, resp1); err != nil {
 		log.Println("Error making request to API:", err)
 		return c.Status(fiber.StatusInternalServerError).SendString("Kenapa ini")
 	}
 
 	// Check response status code
-	fmt.Println(resp)
+	fmt.Println(resp1)
 	if resp.StatusCode() != fasthttp.StatusOK {
-		fmt.Println("Non-OK status code from API:", resp.StatusCode())
-		return c.Send(resp.Body())
+		fmt.Println("Non-OK status code from API:", resp1.StatusCode())
+		return c.Send(resp1.Body())
 	}
 
 	// Send response to client as JSON
 	c.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
-	return c.Send(resp.Body())
+	return c.Send(resp1.Body())
 }
