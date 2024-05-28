@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	
 	"template/app/entity"
 	"template/pkg/database"
 	"template/pkg/tools"
@@ -26,6 +25,7 @@ func CreateUserPelatihan(c *fiber.Ctx) error {
 
 	newUserPelatihan := entity.UsersPelatihan{
 		IdUsers:          uint(id_admin),
+		Nama:             names,
 		IdPelatihan:      uint(tools.StringToInt(data["id_pelatihan"])),
 		StatusPembayaran: "pending",
 		CreteAt:          tools.TimeNowJakarta(),
@@ -46,70 +46,65 @@ func CreateUserPelatihan(c *fiber.Ctx) error {
 func GetUserPelatihan(c *fiber.Ctx) error {
 
 	/*
-	id_admin, _ := c.Locals("id_admin").(int)
-	role, _ := c.Locals("role").(string)
-	names, _ := c.Locals("name").(string)
+		id_admin, _ := c.Locals("id_admin").(int)
+		role, _ := c.Locals("role").(string)
+		names, _ := c.Locals("name").(string)
 
-	tools.ValidationJwtUsers(c, role, id_admin, names)
+		tools.ValidationJwtUsers(c, role, id_admin, names)
 
-	*/	
+	*/
 
-	id_users:= c.Query("idUsers")
+	id_users := c.Query("idUsers")
 	id_pelatihan := c.Query("idPelatihan")
 
 	var usersPelatihan []entity.UsersPelatihan
 	baseQuey := database.DB
 
-	if id_users != ""{
+	if id_users != "" {
 		baseQuey = baseQuey.Where("id_users = ?", id_users)
 	}
-	if id_pelatihan != ""{ 
+	if id_pelatihan != "" {
 		baseQuey = baseQuey.Where("id_pelatihan = ?", id_pelatihan)
 	}
 
 	baseQuey.Find(&usersPelatihan)
 
-
-
 	return c.JSON(fiber.Map{
 		"pesan": "Sukses Mengambil data",
-		"data":usersPelatihan,
+		"data":  usersPelatihan,
 	})
 }
 
-
-//Test dengan Gorm relasi cuy
+// Test dengan Gorm relasi cuy
 func GetPelatihanByUser(c *fiber.Ctx) error {
-    userID := c.Query("userID")
-    var user entity.Users
+	userID := c.Query("userID")
+	var user entity.Users
 
-    if err := database.DB.Preload("Pelatihan").First(&user, userID).Error; err != nil {
-        return c.Status(404).SendString(err.Error())
-    }
+	if err := database.DB.Preload("Pelatihan").First(&user, userID).Error; err != nil {
+		return c.Status(404).SendString(err.Error())
+	}
 
-    return c.JSON(user)
+	return c.JSON(user)
 }
 
 func GetUsersByPelatihan(c *fiber.Ctx) error {
 	/*
-	//JWT nya siapa ntar ?
-	id_admin, _ := c.Locals("id_admin").(int)
-	role, _ := c.Locals("role").(string)
-	names, _ := c.Locals("name").(string)
+		//JWT nya siapa ntar ?
+		id_admin, _ := c.Locals("id_admin").(int)
+		role, _ := c.Locals("role").(string)
+		names, _ := c.Locals("name").(string)
 
-	tools.ValidationJwt(c, role, id_admin, names)
+		tools.ValidationJwt(c, role, id_admin, names)
 
 	*/
 
-	idPelatihan:= c.Query("idPelatihan")
+	idPelatihan := c.Query("idPelatihan")
 
-    var pelatihan entity.Pelatihan
+	var pelatihan entity.Pelatihan
 
-    if err := database.DB.Preload("UserPelatihan").Find(&pelatihan, idPelatihan).Error; err != nil {
-        return c.Status(404).SendString(err.Error())
-    }
+	if err := database.DB.Preload("UserPelatihan").Find(&pelatihan, idPelatihan).Error; err != nil {
+		return c.Status(404).SendString(err.Error())
+	}
 
-    return c.JSON(pelatihan)
+	return c.JSON(pelatihan)
 }
-
-
