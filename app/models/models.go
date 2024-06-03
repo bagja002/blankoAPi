@@ -17,25 +17,25 @@ type Moderator struct {
 
 // User represents the user entity
 
-type SuperAdmin struct{ 
-	IdSuperAdmin uint  `json:"id_admin"`
-	Nama string	`json:"nama"`
-	Email string`json:"email"`
-	Username string`json:"username"`
-	Password string`json:"password"`
-	Status string`json:"status"`
+type SuperAdmin struct {
+	IdSuperAdmin uint   `json:"id_admin"`
+	Nama         string `json:"nama"`
+	Email        string `json:"email"`
+	Username     string `json:"username"`
+	Password     string `json:"password"`
+	Status       string `json:"status"`
 }
 
 //Entity Untuk Lemdiklat
 
-type AdminPusat struct{
-	IdAdminPusat uint 
-	Nama string
-	Email string
-	Password string
-	NoTelpon string
-	Nip string	
-	Status string
+type AdminPusat struct {
+	IdAdminPusat uint
+	Nama         string
+	Email        string
+	Password     string
+	NoTelpon     string
+	Nip          string
+	Status       string
 }
 
 type Pelatihan struct {
@@ -67,31 +67,26 @@ type Pelatihan struct {
 	NoSertifikat             string `json:"no_sertifikat"`
 	IdSaranaPrasarana        string `json:"id_sarana_prasarana"`
 
-	
-	
-	IdKonsumsi               string `json:"id_konsumsi"`
-	CreateAt                 string `json:"created_at"`
-	UpdateAt                 string `json:"updated_at"`
+	IdKonsumsi string `json:"id_konsumsi"`
+	CreateAt   string `json:"created_at"`
+	UpdateAt   string `json:"updated_at"`
 
-
-	//Penambahan Matery 
+	//Penambahan Matery
 	NamaMateri string `json:"NamaMateri"`
-	Deskripsi string `json:"Deskripsi"`
-	JamTeory string `json:"JamTeory"`
+	Deskripsi  string `json:"Deskripsi"`
+	JamTeory   string `json:"JamTeory"`
 	JamPraktek string `json:"JamPraktek"`
 }
 
-
 type Users struct {
-	IdUsers             uint 
 	Nama                string
-	NoTelpon            int
+	NoTelpon            string
 	Email               string
 	Password            string
 	Kota                string
 	Provinsi            string
 	Alamat              string
-	Nik                 int
+	Nik                 string
 	TempatLahir         string
 	TanggalLahir        string
 	JenisKelamin        string
@@ -107,10 +102,8 @@ type Users struct {
 	Ktp                 string //KTP
 	KK                  string //Kartu Keluarga
 	SuratKesehatan      string //SuratKesehatan
-	Ijazah  string 
+	Ijazah              string
 	Status              string
 	CreateAt            string
 	UpdateAt            string
-
 }
-

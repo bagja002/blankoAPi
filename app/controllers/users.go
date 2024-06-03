@@ -4,7 +4,7 @@ import (
 	//"backend-elaut/app/entity"
 
 	"os"
-	"strings"
+
 	"template/app/entity"
 	"template/app/models"
 
@@ -162,112 +162,172 @@ func GetAllUsers(c *fiber.Ctx) error {
 
 // Update user by ID
 func UpdateUser(c *fiber.Ctx) error {
-	id_admin, _ := c.Locals("id_admin").(int)
-	role, _ := c.Locals("role").(string)
-	names, _ := c.Locals("name").(string)
-
-	tools.ValidationJwtUsers(c, role, id_admin, names)
-
-	photoProfile, err := c.FormFile("Foto")
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"Message": "Failed to retrieve file", "Error": err.Error()})
-	}
-	Ktp, err := c.FormFile("Ktp")
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"Message": "Failed to retrieve file", "Error": err.Error()})
-	}
-	KK, err := c.FormFile("KK")
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"Message": "Failed to retrieve file", "Error": err.Error()})
-	}
-	ijasah, err := c.FormFile("Ijazah")
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"Message": "Failed to retrieve file", "Error": err.Error()})
-	}
-
-	suratSehat, err := c.FormFile("SuratKesehatan")
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"Message": "Failed to retrieve file", "Error": err.Error()})
-	}
-	var request models.Users
-	if err := c.BodyParser(&request); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"Message": "Failed to parse request body", "Error": err.Error()})
-	}
-
-	var user entity.Users
-	if err := database.DB.Find(&user, id_admin).Error; err != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"Message": "User not found",
+	idAdmin, ok := c.Locals("id_admin").(int)
+	if !ok {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid or missing id_admin",
 		})
 	}
-	//untuk delete file
+
+	role, ok := c.Locals("role").(string)
+	if !ok {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid or missing role",
+		})
+	}
+
+	names, ok := c.Locals("name").(string)
+	if !ok {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid or missing name",
+		})
+	}
+
+	tools.ValidationJwtUsers(c, role, idAdmin, names)
+
+	var request models.Users
+
+	if err := c.BodyParser(&request); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Failed to parse request body",
+			"error":   err.Error(),
+		})
+	}
+
+	photoProfile, _ := c.FormFile("Foto")
+
+	Ktp, _ := c.FormFile("Ktp")
+
+	KK, _ := c.FormFile("KK")
+
+	ijasah, _ := c.FormFile("Ijazah")
+
+	suratSehat, _ := c.FormFile("SuratKesehatan")
+
+	var user entity.Users
+	if err := database.DB.First(&user, idAdmin).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "User not found",
+		})
+	}
+
+	// Paths for deleting old files
 	pathKK := "public/static/profile/kk/" + user.KK
 	pathKTP := "public/static/profile/ktp/" + user.Ktp
 	pathPoto := "public/static/profile/fotoProfile/" + user.Foto
 	pathIzasah := "public/static/profile/ijazah/" + user.Ijazah
 	pathSuratSehat := "public/static/profile/suratSehat/" + user.SuratKesehatan
 
-	os.Remove(pathKK)
-	os.Remove(pathKTP)
-	os.Remove(pathPoto)
-	os.Remove(pathIzasah)
-	os.Remove(pathSuratSehat)
-	// Update user fields
-	update := entity.Users{
-		Nama:                request.Nama,
-		NoTelpon:            request.NoTelpon,
-		Email:               request.Email,
-		Password:            request.Password,
-		Kota:                request.Kota,
-		Provinsi:            request.Provinsi,
-		Alamat:              request.Alamat,
-		Nik:                 request.Nik,
-		TempatLahir:         request.TempatLahir,
-		TanggalLahir:        request.TanggalLahir,
-		JenisKelamin:        request.JenisKelamin,
-		Pekerjaan:           request.Pekerjaan,
-		GolonganDarah:       request.GolonganDarah,
-		StatusMenikah:       request.StatusMenikah,
-		Kewarganegaraan:     request.Kewarganegaraan,
-		IbuKandung:          request.IbuKandung,
-		NegaraTujuanBekerja: request.NegaraTujuanBekerja,
-		PendidikanTerakhir:  request.PendidikanTerakhir,
-		Agama:               request.Agama,
-		Foto:                photoProfile.Filename, //ganti format nama File Foto dengan Iser dan nama
-		Status:              request.Status,
-		CreateAt:            request.CreateAt,
-		UpdateAt:            request.UpdateAt,
-		KK:                  KK.Filename,
-		Ktp:                 Ktp.Filename,
-		Ijazah:              ijasah.Filename,
-		SuratKesehatan:      suratSehat.Filename,
+	tx := database.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	// Handle file uploads and updates
+	if photoProfile != nil {
+		user.Foto = photoProfile.Filename
+		os.Remove(pathPoto)
+		if err := c.SaveFile(photoProfile, "public/static/profile/fotoProfile/"+photoProfile.Filename); err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Failed to save photo profile",
+				"error":   err.Error(),
+			})
+		}
 	}
 
+	if Ktp != nil {
+		user.Ktp = Ktp.Filename
+		os.Remove(pathKTP)
+		if err := c.SaveFile(Ktp, "public/static/profile/ktp/"+Ktp.Filename); err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Failed to save KTP",
+				"error":   err.Error(),
+			})
+		}
+	}
+
+	if KK != nil {
+		user.KK = KK.Filename
+		os.Remove(pathKK)
+		if err := c.SaveFile(KK, "public/static/profile/kk/"+KK.Filename); err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Failed to save KK",
+				"error":   err.Error(),
+			})
+		}
+	}
+
+	if ijasah != nil {
+		user.Ijazah = ijasah.Filename
+		os.Remove(pathIzasah)
+		if err := c.SaveFile(ijasah, "public/static/profile/ijazah/"+ijasah.Filename); err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Failed to save Ijazah",
+				"error":   err.Error(),
+			})
+		}
+	}
+
+	if suratSehat != nil {
+		user.SuratKesehatan = suratSehat.Filename
+		os.Remove(pathSuratSehat)
+		if err := c.SaveFile(suratSehat, "public/static/profile/suratSehat/"+suratSehat.Filename); err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Failed to save Surat Kesehatan",
+				"error":   err.Error(),
+			})
+		}
+	}
+
+	// Update user fields
+	user.Nama = request.Nama
+	user.NoTelpon = tools.StringToInt(request.NoTelpon)
+	user.Email = request.Email
+	user.Password = request.Password
+	user.Kota = request.Kota
+	user.Provinsi = request.Provinsi
+	user.Alamat = request.Alamat
+	user.Nik = tools.StringToInt(request.Nik)
+	user.TempatLahir = request.TempatLahir
+	user.TanggalLahir = request.TanggalLahir
+	user.JenisKelamin = request.JenisKelamin
+	user.Pekerjaan = request.Pekerjaan
+	user.GolonganDarah = request.GolonganDarah
+	user.StatusMenikah = request.StatusMenikah
+	user.Kewarganegaraan = request.Kewarganegaraan
+	user.IbuKandung = request.IbuKandung
+	user.NegaraTujuanBekerja = request.NegaraTujuanBekerja
+	user.PendidikanTerakhir = request.PendidikanTerakhir
+	user.Agama = request.Agama
+	user.Status = request.Status
+	user.CreateAt = request.CreateAt
+	user.UpdateAt = request.UpdateAt
+
 	// Save the updated user
-	if err := database.DB.Model(&user).Updates(&update).Error; err != nil {
+	if err := tx.Model(&user).Where("id_users = ?", idAdmin).Updates(&user).Error; err != nil {
+		tx.Rollback()
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"Message": "Failed to update user",
+			"message": "Failed to update user",
+			"error":   err.Error(),
 		})
 	}
 
-	if err := c.SaveFile(photoProfile, "public/static/profile/fotoProfile/"+strings.ReplaceAll(photoProfile.Filename, " ", "")); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save fotoProfile", "Error": err.Error()})
-	}
-	if err := c.SaveFile(KK, "public/static/profile/kk/"+strings.ReplaceAll(KK.Filename, " ", "")); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save kk", "Error": err.Error()})
-	}
-	if err := c.SaveFile(Ktp, "public/static/profile/ktp/"+strings.ReplaceAll(Ktp.Filename, " ", "")); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save ktp", "Error": err.Error()})
-	}
-	if err := c.SaveFile(ijasah, "public/static/profile/ijazah/"+strings.ReplaceAll(ijasah.Filename, " ", "")); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save ijazah", "Error": err.Error()})
-	}
-	if err := c.SaveFile(suratSehat, "public/static/profile/suratSehat/"+strings.ReplaceAll(suratSehat.Filename, " ", "")); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save suratSehat", "Error": err.Error()})
+	if err := tx.Commit().Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to commit transaction",
+			"error":   err.Error(),
+		})
 	}
 
 	return c.JSON(fiber.Map{
-		"Message": "User updated successfully",
+		"message": "User updated successfully",
 	})
 }
 

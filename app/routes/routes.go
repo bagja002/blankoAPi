@@ -52,7 +52,7 @@ func SetupRoutesFiber(app *fiber.App) {
 	lemdik.Put("/updatePelatihan", middleware.JwtProtect(), controllers.UpdatePelatihan)
 	lemdik.Get("/getPelatihan", controllers.GetPelatihan)
 
-	lemdik.Put("/updateLastSertif", middleware.JwtProtect(), controllers.AddLastSertifLowBalai)
+	//lemdik.Put("/updateLastSertif", middleware.JwtProtect(), controllers.AddLastSertifLowBalai)
 
 	//Sarpras
 	lemdik.Post("/createSarpras", middleware.JwtProtect(), controllers.CreateSarpras)
