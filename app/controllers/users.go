@@ -118,7 +118,7 @@ func GetUserByID(c *fiber.Ctx) error {
 	tools.ValidationJwtUsers(c, role, id_admin, names)
 
 	var user entity.Users
-	if err := database.DB.Find(&user, id_admin).Error; err != nil {
+	if err := database.DB.Preload("Pelatihan").Find(&user, id_admin).Error; err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"Message": "User not found",
 		})
@@ -127,16 +127,27 @@ func GetUserByID(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
-// Get all users
+// Get all users buat yang ke lemdik
 func GetAllUsers(c *fiber.Ctx) error {
+
+	id_admin, _ := c.Locals("id_admin").(int)
+	role, _ := c.Locals("role").(string)
+	names, _ := c.Locals("name").(string)
+
+	tools.ValidationJwtLemdik(c, role, id_admin, names)
 
 	id := c.Query("id")
 
 	if id != "" {
 		var users entity.Users
-		if err := database.DB.Where("id_users = ?", id).Find(&users).Error; err != nil {
+		if err := database.DB.Where("id_users = ?", id).Preload("Pelatihan").Find(&users).Error; err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"Message": "Failed to fetch users",
+			})
+		}
+		if users.IdUsers == 0 {
+			return c.Status(400).JSON(fiber.Map{
+				"Pesan": "Tidak Ada users",
 			})
 		}
 
@@ -148,7 +159,7 @@ func GetAllUsers(c *fiber.Ctx) error {
 	}
 
 	var users []entity.Users
-	if err := database.DB.Find(&users).Error; err != nil {
+	if err := database.DB.Preload("Pelatihan").Find(&users).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"Pesan": "Failed to fetch users",
 		})
