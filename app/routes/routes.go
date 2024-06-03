@@ -42,7 +42,7 @@ func SetupRoutesFiber(app *fiber.App) {
 
 	//User Post Add Pelatihan
 	users.Post("/addPelatihan", middleware.JwtProtect(), controllers.CreateUserPelatihan)
-
+	lemdik.Put("/updatePelatihanUsers", middleware.JwtProtect(), controllers.UpdateUsersPelatihan)
 	//lemdik Area
 	lemdik.Post("/login", controllers.LoginLemdik)
 	lemdik.Get("/getLemdik", controllers.GetLemdik)
@@ -52,9 +52,13 @@ func SetupRoutesFiber(app *fiber.App) {
 	lemdik.Put("/updatePelatihan", middleware.JwtProtect(), controllers.UpdatePelatihan)
 	lemdik.Get("/getPelatihan", controllers.GetPelatihan)
 
+	lemdik.Put("/updateLastSertif", middleware.JwtProtect(), controllers.AddLastSertifLowBalai)
+
 	//Sarpras
 	lemdik.Post("/createSarpras", middleware.JwtProtect(), controllers.CreateSarpras)
 	lemdik.Get("/getSarpras", middleware.JwtProtect(), controllers.GetSarpras)
+
+	//Pelatihan Users Area
 
 	//super admin
 	//Create User area

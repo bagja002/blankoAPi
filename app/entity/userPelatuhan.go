@@ -18,6 +18,7 @@ type UsersPelatihan struct {
 	WaktuPembayaran  string
 	Keterangan       string
 	IsActice         string
+	FileSertifikat   string
 	CreteAt          string
 	UpdateAt         string
 }

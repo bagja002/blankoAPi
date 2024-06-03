@@ -22,11 +22,22 @@ func CreateUserPelatihan(c *fiber.Ctx) error {
 	if err := c.BodyParser(&data); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"Message": "Failed to parse request body", "Error": err.Error()})
 	}
+	var exixtingPelatihanUsers entity.UsersPelatihan
+	idPelatihan := uint(tools.StringToInt(data["id_pelatihan"]))
+
+	database.DB.Where("id_users = ? AND id_pelatihan = ?", id_admin, idPelatihan).Find(&exixtingPelatihanUsers)
+
+	if exixtingPelatihanUsers.IdUserPelatihan != 0 {
+		c.Status(400).JSON(fiber.Map{
+			"Pesan": "Anda Sudah Mendaftar Pelatihan",
+		})
+	}
 
 	newUserPelatihan := entity.UsersPelatihan{
 		IdUsers:          uint(id_admin),
 		Nama:             names,
-		IdPelatihan:      uint(tools.StringToInt(data["id_pelatihan"])),
+		IdPelatihan:      idPelatihan,
+		NoRegistrasi:     "No registtrasi",
 		StatusPembayaran: "pending",
 		CreteAt:          tools.TimeNowJakarta(),
 	}
@@ -40,6 +51,99 @@ func CreateUserPelatihan(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"pesan": "berhasil membuat data",
 		"data":  testing,
+	})
+}
+
+func UpdateUsersPelatihan(c *fiber.Ctx) error {
+
+	id_admin, _ := c.Locals("id_admin").(int)
+	role, _ := c.Locals("role").(string)
+	names, _ := c.Locals("name").(string)
+
+	tools.ValidationJwtLemdik(c, role, id_admin, names)
+
+	//INI CARANYA BAGAIMANA
+	id := c.Query("id")
+	FileSertifikat, _ := c.FormFile("FileSertifikat")
+
+	var usersPelatihan entity.UsersPelatihan
+
+	database.DB.Where("id_user_pelatihan = ?", id).Find(&usersPelatihan)
+
+	// Menginisialisasi koneksi database
+	tx := database.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if FileSertifikat != nil {
+		if FileSertifikat != nil {
+			usersPelatihan.FileSertifikat = FileSertifikat.Filename
+			if err := c.SaveFile(FileSertifikat, "public/static/fileSertifikat/"+FileSertifikat.Filename); err != nil {
+				tx.Rollback()
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"pesan": "Gagal menyimpan file EvaluasiRenaksi",
+					"error": err.Error(),
+				})
+			}
+		}
+
+		if err := tx.Model(&usersPelatihan).Where("id_user_pelatihan = ?", id).Updates(&usersPelatihan).Error; err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"pesan": "Gagal memperbarui MonitoringEvaluasi",
+				"error": err.Error(),
+			})
+		}
+
+	}
+
+	//data biasa
+	var request entity.UsersPelatihan
+
+	if err := c.BodyParser(&request); err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"pesan": "gagal reques",
+		})
+	}
+
+	updates := entity.UsersPelatihan{
+		NoSertifikat: request.NoSertifikat,
+		NoRegistrasi: request.NoRegistrasi,
+		PreTest:      request.PreTest,
+		PostTest:     request.PostTest,
+		NilaiTeory:   request.NilaiTeory,
+		NilaiPraktek: request.NilaiPraktek,
+
+		//Nilai Materi
+		StatusPembayaran: request.StatusPembayaran, //Pending dan Void
+		MetodoPembayaran: request.MetodoPembayaran,
+		WaktuPembayaran:  request.WaktuPembayaran,
+		Keterangan:       request.Keterangan,
+
+		UpdateAt: tools.TimeNowJakarta(),
+	}
+
+	if err := tx.Model(&usersPelatihan).Where("id_pelatihan = ?", id).Updates(&updates).Error; err != nil {
+		tx.Rollback()
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"pesan": "Gagal memperbarui MonitoringEvaluasi",
+			"error": err.Error(),
+		})
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"pesan": "Gagal melakukan commit transaksi",
+			"error": err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"Pesan": "Berhasil Update Pelatihan ",
+		"data":  usersPelatihan,
 	})
 }
 

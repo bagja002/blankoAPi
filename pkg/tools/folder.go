@@ -22,6 +22,7 @@ func CreateFolder() {
 
 		"public/static/suratPemberitahuan",
 		"public/static/BeritaAcara",
+		"public/static/fileSertifikat",
 	}
 
 	for _, folder := range folders {

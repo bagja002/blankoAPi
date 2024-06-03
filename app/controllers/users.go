@@ -115,7 +115,7 @@ func GetUserByID(c *fiber.Ctx) error {
 	role, _ := c.Locals("role").(string)
 	names, _ := c.Locals("name").(string)
 
-	tools.ValidationJwt(c, role, id_admin, names)
+	tools.ValidationJwtUsers(c, role, id_admin, names)
 
 	var user entity.Users
 	if err := database.DB.Find(&user, id_admin).Error; err != nil {

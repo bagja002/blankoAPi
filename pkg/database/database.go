@@ -16,8 +16,8 @@ import (
 
 var DB *gorm.DB
 
-func GenerateJenis(){
-	data:= []entity.JenisBidangKompotensi{
+func GenerateJenis() {
+	data := []entity.JenisBidangKompotensi{
 		{KodeKompotensi: "HACCP", NamaKompotensi: "HACCP", CreateAt: tools.TimeNowJakarta()},
 		{KodeKompotensi: "CBIB", NamaKompotensi: "CBIB", CreateAt: tools.TimeNowJakarta()},
 		{KodeKompotensi: "CPPIB", NamaKompotensi: "CPPIB", CreateAt: tools.TimeNowJakarta()},
@@ -27,7 +27,7 @@ func GenerateJenis(){
 		{KodeKompotensi: "MPM", NamaKompotensi: "MPM", CreateAt: tools.TimeNowJakarta()},
 	}
 
-	data2:= []entity.JenisBidangPelatihan{
+	data2 := []entity.JenisBidangPelatihan{
 		{KodeBidang: "HACCP", NamaBidang: "HACCP", CreateAt: tools.TimeNowJakarta()},
 		{KodeBidang: "CBIB", NamaBidang: "CBIB", CreateAt: tools.TimeNowJakarta()},
 		{KodeBidang: "CPPIB", NamaBidang: "CPPIB", CreateAt: tools.TimeNowJakarta()},
@@ -36,7 +36,6 @@ func GenerateJenis(){
 		{KodeBidang: "API", NamaBidang: "API", CreateAt: tools.TimeNowJakarta()},
 		{KodeBidang: "MPM", NamaBidang: "MPM", CreateAt: tools.TimeNowJakarta()},
 	}
-
 
 	for _, d := range data {
 		// Cek apakah data sudah ada di database
@@ -103,25 +102,24 @@ func Connect() {
 	connection.SetConnMaxLifetime(time.Second * time.Duration(maxLifeTimeConnection))
 
 	err = db.AutoMigrate(
-       &entity.Users{},
-        &entity.AdminPusat{},
-        &entity.Lemdiklat{},
-        &entity.SuperAdmin{},
-        &entity.Pelatihan{},
-        &entity.MateriPelatihan{},
-        &entity.Sarpras{},
-        &entity.SarprasPelatihan{},
-        &entity.UsersPelatihan{},
-
+		&entity.Users{},
+		&entity.AdminPusat{},
+		&entity.Lemdiklat{},
+		&entity.SuperAdmin{},
+		&entity.Pelatihan{},
+		&entity.MateriPelatihan{},
+		&entity.Sarpras{},
+		&entity.SarprasPelatihan{},
+		&entity.UsersPelatihan{},
 
 		&entity.JenisBidangKompotensi{},
 		&entity.JenisBidangPelatihan{},
-		
-    )
-    if err != nil {
-        log.Fatalf("failed to auto-migrate: %v", err)
-    }
 
+		&entity.NoSertfikat{},
+	)
+	if err != nil {
+		log.Fatalf("failed to auto-migrate: %v", err)
+	}
 
 	// Cek apakah akun Super Admin sudah terbuat
 	var existingSuperAdmin entity.SuperAdmin
