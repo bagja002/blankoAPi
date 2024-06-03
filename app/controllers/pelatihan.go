@@ -150,6 +150,7 @@ func GetPelatihan(c *fiber.Ctx) error {
 	id := c.Query("id")
 	bidangPelatihan := c.Query("bidang_pelatihan")
 	penyelenggaraPelatihan := c.Query("penyelenggara_pelatihan")
+	idLemdik := c.Query("id_lemdik")
 
 	var pelatihan []entity.Pelatihan
 
@@ -163,6 +164,9 @@ func GetPelatihan(c *fiber.Ctx) error {
 	}
 	if penyelenggaraPelatihan != "" {
 		queryBase = queryBase.Where("penyelenggara_pelatihan = ?", penyelenggaraPelatihan)
+	}
+	if idLemdik != "" {
+		queryBase = queryBase.Where("id_lemdik = ? ", idLemdik)
 	}
 
 	queryBase.Find(&pelatihan)
