@@ -29,7 +29,7 @@ func CreateUserPelatihan(c *fiber.Ctx) error {
 	database.DB.Where("id_users = ? AND id_pelatihan = ?", id_admin, idPelatihan).Find(&exixtingPelatihanUsers)
 
 	if exixtingPelatihanUsers.IdUserPelatihan != 0 {
-		c.Status(400).JSON(fiber.Map{
+		return c.Status(400).JSON(fiber.Map{
 			"Pesan": "Anda Sudah Mendaftar Pelatihan",
 		})
 	}
