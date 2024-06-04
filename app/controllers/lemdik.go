@@ -9,15 +9,15 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-//Register lemdik hanya bisa di daftrkan olah admin pusat
-func RegisterLemdik(c *fiber.Ctx)error{
+// Register lemdik hanya bisa di daftrkan olah admin pusat
+func RegisterLemdik(c *fiber.Ctx) error {
 
-	//Pake Role Super admin/ admin pusat 
+	//Pake Role Super admin/ admin pusat
 	id_admin, _ := c.Locals("id_admin").(int)
 	role, _ := c.Locals("role").(string)
 	names, _ := c.Locals("name").(string)
 
-	tools.ValidationJwt(c ,role,id_admin,names)
+	tools.ValidationJwt(c, role, id_admin, names)
 	var data map[string]string
 
 	if err := c.BodyParser(&data); err != nil {
@@ -45,24 +45,24 @@ func RegisterLemdik(c *fiber.Ctx)error{
 		})
 	}
 
-	newLemdik:= entity.Lemdiklat{
+	newLemdik := entity.Lemdiklat{
 		NamaLemdik: data["nama_lemdik"],
-		NoTelpon: tools.StringToInt(data["no_telpon"]),
-		Email: email,
-		Password: tools.GeneratePassword(data["password"]),
-		Alamat: data["alamat"],
-		Deskripsi: data["deskripsi"],
-		CreateAt: tools.TimeNowJakarta(),
+		NoTelpon:   tools.StringToInt(data["no_telpon"]),
+		Email:      email,
+		Password:   tools.GeneratePassword(data["password"]),
+		Alamat:     data["alamat"],
+		Deskripsi:  data["deskripsi"],
+		CreateAt:   tools.TimeNowJakarta(),
 	}
 
 	database.DB.Create(&newLemdik)
 
 	return c.JSON(fiber.Map{
-		"Pesan":"Sukses Membuat Lemdik",
+		"Pesan": "Sukses Membuat Lemdik",
 	})
 }
 
-func LoginLemdik(c *fiber.Ctx)error{
+func LoginLemdik(c *fiber.Ctx) error {
 
 	var data map[string]string
 
@@ -95,29 +95,32 @@ func LoginLemdik(c *fiber.Ctx)error{
 	}
 }
 
-func GetLemdik(c *fiber.Ctx)error{
+func GetLemdik(c *fiber.Ctx) error {
 
+	//Pake Role Super admin/ admin pusat
+	id_admin, _ := c.Locals("id_admin").(int)
+	role, _ := c.Locals("role").(string)
+	names, _ := c.Locals("name").(string)
 
-	//Pemberian Akses Admin Pusat dan juga Admin lemdik 	
-	id:= c.Query("id")
+	tools.ValidationJwtLemdik(c, role, id_admin, names)
+
+	//Pemberian Akses Admin Pusat dan juga Admin lemdik
 	var lemdik entity.Lemdiklat
-	database.DB.Where("id_lemdik = ?", id).Find(&lemdik)
-
+	database.DB.Where("id_lemdik = ?", id_admin).Find(&lemdik)
 
 	return c.JSON(fiber.Map{
-		"Pesan":"Sukses Mengambil Data",
-		"data":lemdik,
+		"Pesan": "Sukses Mengambil Data",
+		"data":  lemdik,
 	})
 }
 
-func UpdateLemdik(c *fiber.Ctx)error{
+func UpdateLemdik(c *fiber.Ctx) error {
 
 	id_admin, _ := c.Locals("id_admin").(int)
 	role, _ := c.Locals("role").(string)
 	names, _ := c.Locals("name").(string)
 
-	tools.ValidationJwtLemdik(c ,role,id_admin,names)
-
+	tools.ValidationJwtLemdik(c, role, id_admin, names)
 
 	var lemdik entity.Lemdiklat
 
@@ -141,30 +144,25 @@ func UpdateLemdik(c *fiber.Ctx)error{
 		})
 	}
 
-	update:= entity.Lemdiklat{
+	update := entity.Lemdiklat{
 		NamaLemdik: data["nama_lemdik"],
-		NoTelpon: tools.StringToInt(data["no_telpon"]),
-		Email: email,
-		Password: tools.GeneratePassword(data["password"]),
-		Alamat: data["alamat"],
-		Deskripsi: data["deskripsi"],
-		CreateAt: tools.TimeNowJakarta(),
+		NoTelpon:   tools.StringToInt(data["no_telpon"]),
+		Email:      email,
+		Password:   tools.GeneratePassword(data["password"]),
+		Alamat:     data["alamat"],
+		Deskripsi:  data["deskripsi"],
+		CreateAt:   tools.TimeNowJakarta(),
 	}
 
 	database.DB.Model(&lemdik).Updates(&update)
 
 	return c.JSON(fiber.Map{
-		"Pesan":"Sukses Update Data",
-		"Data":lemdik,
+		"Pesan": "Sukses Update Data",
+		"Data":  lemdik,
 	})
 }
 
-func DeleteLemdik(c *fiber.Ctx)error{
-
+func DeleteLemdik(c *fiber.Ctx) error {
 
 	return nil
 }
-
-
-
-
