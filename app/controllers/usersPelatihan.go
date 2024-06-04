@@ -48,6 +48,7 @@ func CreateUserPelatihan(c *fiber.Ctx) error {
 		Nama:             names,
 		IdPelatihan:      idPelatihan,
 		NoRegistrasi:     NoRegistrasi,
+		TotalBayar:       data["totalBayar"],
 		StatusPembayaran: "pending",
 		CreteAt:          tools.TimeNowJakarta(),
 	}

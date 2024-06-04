@@ -21,6 +21,7 @@ type UsersPelatihan struct {
 	IsActice         string
 	FileSertifikat   string
 	Institusi        string
+	TotalBayar       string
 	CreteAt          string
 	UpdateAt         string
 }
