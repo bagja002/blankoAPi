@@ -39,11 +39,17 @@ func GeneratorNoRegister(name string, bidang string, idPel uint, idUsers uint, i
 	bidangPelatihan := ""
 	switch lowBidangs {
 	case "budidaya":
-		bidangPelatihan = "BP"
-	case "pengolahan":
-		bidangPelatihan = "PP"
-	case "pemasaran":
+		bidangPelatihan = "BD"
+	case "pengolahan dan pemasaran":
 		bidangPelatihan = "PM"
+	case "penangkapan":
+		bidangPelatihan = "PK"
+	case "mesin perikanan":
+		bidangPelatihan = "MP"
+	case "konservasi":
+		bidangPelatihan = "KV"
+	case "wisata bahari":
+		bidangPelatihan = "WB"
 	default:
 		bidangPelatihan = "XX"
 	}
