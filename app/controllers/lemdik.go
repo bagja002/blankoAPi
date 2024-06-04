@@ -106,7 +106,7 @@ func GetLemdik(c *fiber.Ctx) error {
 
 	//Pemberian Akses Admin Pusat dan juga Admin lemdik
 	var lemdik entity.Lemdiklat
-	database.DB.Where("id_lemdik = ?", id_admin).Find(&lemdik)
+	database.DB.Where("id_lemdik = ?", id_admin).Preload("Pelatihan").Find(&lemdik)
 
 	return c.JSON(fiber.Map{
 		"Pesan": "Sukses Mengambil Data",
