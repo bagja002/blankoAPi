@@ -3,6 +3,7 @@ package controllers
 import (
 	"template/app/entity"
 	"template/pkg/database"
+	"template/pkg/generator"
 	"template/pkg/tools"
 
 	"github.com/gofiber/fiber/v2"
@@ -32,12 +33,21 @@ func CreateUserPelatihan(c *fiber.Ctx) error {
 			"Pesan": "Anda Sudah Mendaftar Pelatihan",
 		})
 	}
+	//
+	var Pelatihan entity.Pelatihan
+	database.DB.Where("id_pelatihan =?", idPelatihan).Find(&Pelatihan)
+
+	//ambil id lemdiknya trius ambil Id namanya
+	var lemdik entity.Lemdiklat
+	database.DB.Where("id_lemdik = ? ", Pelatihan.IdLemdik).Find(&lemdik)
+
+	NoRegistrasi := generator.GeneratorNoRegister(lemdik.NamaLemdik, Pelatihan.BidangPelatihan, Pelatihan.IdPelatihan, uint(id_admin), int(lemdik.IdLemdik))
 
 	newUserPelatihan := entity.UsersPelatihan{
 		IdUsers:          uint(id_admin),
 		Nama:             names,
 		IdPelatihan:      idPelatihan,
-		NoRegistrasi:     "No registtrasi",
+		NoRegistrasi:     NoRegistrasi,
 		StatusPembayaran: "pending",
 		CreteAt:          tools.TimeNowJakarta(),
 	}
@@ -50,7 +60,7 @@ func CreateUserPelatihan(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"pesan": "berhasil membuat data",
-		"data":  testing,
+		"data":  newUserPelatihan,
 	})
 }
 

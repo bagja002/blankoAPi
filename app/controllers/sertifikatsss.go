@@ -46,11 +46,11 @@ func AddLastSertifLowBalai(c *fiber.Ctx) error {
 	// Memisahkan berdasarkan delimiter "/"
 	parts := strings.Split(code, "/")
 
-	numbers := ""
+	//numbers := ""
 
 	if len(parts) >= 3 {
 		// Memisahkan Nomor
-		numPart := strings.Split(parts[0], ".")[1] // Memisahkan dengan delimiter "."
+		//numPart := strings.Split(parts[0], ".")[1] // Memisahkan dengan delimiter "."
 
 		// Memisahkan TGL
 		//tglPart := strings.Split(parts[1], ".")[1] // Memisahkan dengan delimiter "."
@@ -92,15 +92,15 @@ func AddLastSertifLowBalai(c *fiber.Ctx) error {
 		}
 
 		// Output hasil pemisahan
-		numbers = numPart
+		//numbers = numPart
 
 	} else {
 		fmt.Println("Format kode tidak valid")
 	}
 
 	NewTableSertifikat := entity.NoSertfikat{
-		IdLemdik:            uint(id_admin),
-		Nomor:               numbers,
+		//IdLemdik:            uint(id_admin),
+		//Nomor:               numbers,
 		NoLengkapSertifikat: code,
 		CreateAt:            tools.TimeNowJakarta(),
 	}
@@ -187,7 +187,7 @@ func GenerateNoSertifikat(c *fiber.Ctx, admin uint) error {
 	//Gabungin No Sertifikat nya bree
 	NewNoSertifikat := "B." + numbersCuy + "/BPPP." + balai + "/RSDM.510/" + Bulan + "/" + Tahun
 	newSertifikat := entity.NoSertfikat{
-		Nomor:               tools.IntToString(numbers),
+		//Nomor:               tools.IntToString(numbers),
 		NoLengkapSertifikat: NewNoSertifikat,
 	}
 

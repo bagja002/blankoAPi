@@ -16,6 +16,10 @@ import (
 
 var DB *gorm.DB
 
+func GenerateLembagaDiklat() {
+
+}
+
 func GenerateJenis() {
 	data := []entity.JenisBidangKompotensi{
 		{KodeKompotensi: "HACCP", NamaKompotensi: "HACCP", CreateAt: tools.TimeNowJakarta()},
