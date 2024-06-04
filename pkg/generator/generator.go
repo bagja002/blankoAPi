@@ -113,22 +113,22 @@ func GenerateSertifikat(idLemdik string, idPelatihan string, c *fiber.Ctx) strin
 		nomorSeriAwal := splitted[0]
 		balai := splitted[1]
 		rsdm := splitted[2]
-		bulan := time.Now().Format("02")
-		bulanRomawi := map[string]string{
-			"01": "I",
-			"02": "II",
-			"03": "III",
-			"04": "IV",
-			"05": "V",
-			"06": "VI",
-			"07": "VII",
-			"08": "VIII",
-			"09": "IX",
-			"10": "X",
-			"11": "XI",
-			"12": "XII",
-		}
+		bulan := time.Now().Month().String()
 
+		bulanRomawi := map[string]string{
+			"January":   "I",
+			"February":  "II",
+			"March":     "III",
+			"April":     "IV",
+			"May":       "V",
+			"June":      "VI",
+			"July":      "VII",
+			"August":    "VIII",
+			"September": "IX",
+			"October":   "X",
+			"November":  "XI",
+			"December":  "XII",
+		}
 		bulanString := bulan
 		bulanRomawiString := bulanRomawi[bulanString]
 		tahun := splitted[4]
