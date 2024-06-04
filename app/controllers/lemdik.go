@@ -145,13 +145,14 @@ func UpdateLemdik(c *fiber.Ctx) error {
 	}
 
 	update := entity.Lemdiklat{
-		NamaLemdik: data["nama_lemdik"],
-		NoTelpon:   tools.StringToInt(data["no_telpon"]),
-		Email:      email,
-		Password:   tools.GeneratePassword(data["password"]),
-		Alamat:     data["alamat"],
-		Deskripsi:  data["deskripsi"],
-		CreateAt:   tools.TimeNowJakarta(),
+		NamaLemdik:   data["nama_lemdik"],
+		NoTelpon:     tools.StringToInt(data["no_telpon"]),
+		Email:        email,
+		Password:     tools.GeneratePassword(data["password"]),
+		Alamat:       data["alamat"],
+		Deskripsi:    data["deskripsi"],
+		LastNosertif: data["last_sertif"],
+		CreateAt:     tools.TimeNowJakarta(),
 	}
 
 	database.DB.Model(&lemdik).Updates(&update)
@@ -165,4 +166,33 @@ func UpdateLemdik(c *fiber.Ctx) error {
 func DeleteLemdik(c *fiber.Ctx) error {
 
 	return nil
+}
+
+func LastNomorSertifBalai(c *fiber.Ctx) error {
+
+	id_admin, _ := c.Locals("id_admin").(int)
+	role, _ := c.Locals("role").(string)
+	names, _ := c.Locals("name").(string)
+
+	tools.ValidationJwtLemdik(c, role, id_admin, names)
+
+	var data map[string]string
+
+	err := c.BodyParser(&data)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"Pesan": "Gagal Mendapatkan Body data",
+		})
+	}
+
+	newLastRecord := entity.Sertifikat{
+		IdLemdik:    uint(id_admin),
+		NoSertfikat: data["no_last_sertifikat"],
+	}
+
+	database.DB.Create(&newLastRecord)
+
+	return c.JSON(fiber.Map{
+		"Pesan": "Sukses Menambahkan data balai",
+	})
 }

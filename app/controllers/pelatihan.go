@@ -8,6 +8,7 @@ import (
 	"template/app/models"
 	"template/pkg/config"
 	"template/pkg/database"
+	"template/pkg/generator"
 	"template/pkg/tools"
 
 	"github.com/gofiber/fiber/v2"
@@ -295,7 +296,7 @@ func UpdatePelatihan(c *fiber.Ctx) error {
 		TtdSertifikat:            request.TtdSertifikat,
 		NoSertifikat:             request.NoSertifikat,
 
-		StatusApproval: request.Status,
+		StatusApproval: request.StatusApproval,
 
 		UpdateAt: tools.TimeNowJakarta(),
 
@@ -324,6 +325,63 @@ func UpdatePelatihan(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"Pesan": "Sukses Update Pelatihan",
 		"data":  pelatihan,
+	})
+}
+
+// Publish Sertifikat Pake ID Pelatihan
+func PublishSertifikat(c *fiber.Ctx) error {
+
+	id_admin, _ := c.Locals("id_admin").(int)
+	role, _ := c.Locals("role").(string)
+	names, _ := c.Locals("name").(string)
+
+	tools.ValidationJwtLemdik(c, role, id_admin, names)
+
+	id := c.Query("id")
+
+	if id == "" {
+		return c.Status(400).JSON(fiber.Map{
+			"Pesan": "Masukan Parameter ID Pelatihan",
+		})
+
+	}
+
+	var pelatihan entity.Pelatihan
+
+	database.DB.Where("id_pelatihan = ?", id).Find(&pelatihan)
+
+	if pelatihan.NoSertifikat != "" {
+		return c.Status(400).JSON(fiber.Map{
+			"Pesan": "Sertifikat Sudah ada",
+			"data":  pelatihan.NoSertifikat,
+		})
+	}
+
+	//BeritaAcara, _ := c.FormFile("BeritaAcara")
+
+	//c.SaveFile(BeritaAcara, "public/static/BeritaAcara/"+BeritaAcara.Filename)
+
+	//Generate Sertifikat per balai
+	var request entity.Pelatihan
+	if err := c.BodyParser(&request); err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"pesan": "gagal reques",
+		})
+	}
+
+	NewNoSertif := generator.GenerateSertifikat(tools.IntToString(id_admin), id, c)
+
+	updates := entity.Pelatihan{
+		//BeritaAcara:   BeritaAcara.Filename,
+		TtdSertifikat: request.TtdSertifikat,
+		NoSertifikat:  NewNoSertif,
+	}
+
+	database.DB.Model(&pelatihan).Updates(&updates)
+
+	return c.JSON(fiber.Map{
+		"Pesan": "Sukses Generate Sertifikat",
+		"Data":  pelatihan,
 	})
 }
 

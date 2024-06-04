@@ -120,6 +120,7 @@ func Connect() {
 		&entity.JenisBidangPelatihan{},
 
 		&entity.NoSertfikat{},
+		&entity.Sertifikat{},
 	)
 	if err != nil {
 		log.Fatalf("failed to auto-migrate: %v", err)

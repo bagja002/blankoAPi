@@ -5,8 +5,10 @@ import (
 	"strings"
 	"template/app/entity"
 	"template/pkg/database"
-	//"template/pkg/tools"
+	"template/pkg/tools"
 	"time"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func GeneratorNoRegister(name string, bidang string, idPel uint, idUsers uint, idLemdik int) string {
@@ -93,4 +95,68 @@ func GeneratorNoRegister(name string, bidang string, idPel uint, idUsers uint, i
 	*/
 
 	return NoRegis
+}
+
+func GenerateSertifikat(idLemdik string, idPelatihan string, c *fiber.Ctx) string {
+
+	var lastSertif entity.Sertifikat
+
+	database.DB.Where("id_lemdik = ?", idLemdik).Last(&lastSertif)
+
+	lastSertifikat := lastSertif.NoSertfikat
+
+	splitted := strings.Split(lastSertifikat, "/")
+
+	newSertifkatBaru := ""
+
+	if len(splitted) >= 5 {
+		nomorSeriAwal := splitted[0]
+		balai := splitted[1]
+		rsdm := splitted[2]
+		bulan := time.Now().Format("02")
+		bulanRomawi := map[string]string{
+			"01": "I",
+			"02": "II",
+			"03": "III",
+			"04": "IV",
+			"05": "V",
+			"06": "VI",
+			"07": "VII",
+			"08": "VIII",
+			"09": "IX",
+			"10": "X",
+			"11": "XI",
+			"12": "XII",
+		}
+
+		bulanString := bulan
+		bulanRomawiString := bulanRomawi[bulanString]
+		tahun := splitted[4]
+
+		// Mengubah nomor seri awal menjadi integer
+		NoSertifAwal := tools.StringToInt(nomorSeriAwal)
+
+		// Mendapatkan nomor seri berikutnya
+		nomorSeriBaru := NoSertifAwal + 1
+
+		// Memformat nomor seri baru
+		nomorSeriBaruString := fmt.Sprintf("%03d", nomorSeriBaru)
+
+		// Membentuk string sertifikat baru
+		sertifikatBaru := nomorSeriBaruString + "/" + balai + "/" + rsdm + "/" + bulanRomawiString + "/" + tahun
+
+		// Mengembalikan string sertifikat baru
+		newSertifkatBaru = sertifikatBaru
+	}
+	//simpan NewSertif baru di simpan di database
+	newDatabaseSertif := entity.Sertifikat{
+		IdLemdik:    uint(tools.StringToInt(idLemdik)),
+		IdPelatihan: uint(tools.StringToInt(idPelatihan)),
+		NoSertfikat: newSertifkatBaru,
+		CreateAt:    tools.TimeNowJakarta(),
+	}
+
+	database.DB.Create(&newDatabaseSertif)
+
+	return newSertifkatBaru
 }
