@@ -5,6 +5,10 @@ type UsersPelatihan struct {
 	IdUsers            uint
 	Nama               string
 	TempatTanggalLahir string
+	NamaPelatihan      string
+	BidangPelatihan    string
+	DetailPelatihan    string
+	StatusAproval      string
 	IdPelatihan        uint
 	NoSertifikat       string
 	NoRegistrasi       string

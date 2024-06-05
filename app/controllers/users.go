@@ -155,7 +155,7 @@ func GetUserByID(c *fiber.Ctx) error {
 		UpdateAt:            user.UpdateAt,
 		Ijazah:              user.Ijazah,
 		KusukaUsers:         user.KusukaUsers,
-		//Pelatihan:           user.Pelatihan[0].NoSertifikat,
+		//Pelatihan.:           user.Pelatihan[0].NoSertifikat,
 	}
 
 	fmt.Println(newUser)

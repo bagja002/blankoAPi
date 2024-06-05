@@ -45,13 +45,18 @@ func CreateUserPelatihan(c *fiber.Ctx) error {
 	NoRegistrasi := generator.GeneratorNoRegister(lemdik.NamaLemdik, Pelatihan.BidangPelatihan, Pelatihan.IdPelatihan, uint(id_admin), int(lemdik.IdLemdik))
 
 	newUserPelatihan := entity.UsersPelatihan{
-		IdUsers:          uint(id_admin),
-		Nama:             names,
-		IdPelatihan:      idPelatihan,
-		NoRegistrasi:     NoRegistrasi,
-		TotalBayar:       data["totalBayar"],
-		StatusPembayaran: "pending",
-		CreteAt:          tools.TimeNowJakarta(),
+		IdUsers:            uint(id_admin),
+		Nama:               names,
+		IdPelatihan:        idPelatihan,
+		NoRegistrasi:       NoRegistrasi,
+		TotalBayar:         data["totalBayar"],
+		TempatTanggalLahir: data["ttl"],
+		NamaPelatihan:      data["namaPelatihan"],
+		BidangPelatihan:    data["bidangPelatihan"],
+		DetailPelatihan:    data["DetailPelatihan"],
+		StatusAproval:      data["statusAproval"],
+		StatusPembayaran:   "pending",
+		CreteAt:            tools.TimeNowJakarta(),
 	}
 
 	database.DB.Create(&newUserPelatihan)

@@ -84,6 +84,10 @@ type UsersPelatihan struct {
 	Nama               string
 	TempatTanggalLahir string
 	IdPelatihan        uint
+	NamaPelatihan      string
+	BidangPelatihan    string
+	DetailPelatihan    string
+	StatusAproval      string
 	NoSertifikat       string
 	NoRegistrasi       string
 	PreTest            int
