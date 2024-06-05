@@ -3,6 +3,7 @@ package controllers
 import (
 	//"backend-elaut/app/entity"
 
+	"fmt"
 	"os"
 
 	"template/app/entity"
@@ -124,6 +125,50 @@ func GetUserByID(c *fiber.Ctx) error {
 		})
 	}
 
+	newUser := models.Users{
+		IdUsers:             user.IdUsers,
+		Nama:                user.Nama,
+		NoTelpon:            user.NoTelpon,
+		Email:               user.Email,
+		Password:            user.Password,
+		Kota:                user.Kota,
+		Provinsi:            user.Provinsi,
+		Alamat:              user.Alamat,
+		Nik:                 user.Nik,
+		TempatLahir:         user.TempatLahir,
+		TanggalLahir:        user.TanggalLahir,
+		JenisKelamin:        user.JenisKelamin,
+		Pekerjaan:           user.Pekerjaan,
+		GolonganDarah:       user.GolonganDarah,
+		StatusMenikah:       user.StatusMenikah,
+		Kewarganegaraan:     user.Kewarganegaraan,
+		IbuKandung:          user.IbuKandung,
+		NegaraTujuanBekerja: user.NegaraTujuanBekerja,
+		PendidikanTerakhir:  user.PendidikanTerakhir,
+		Agama:               user.Agama,
+		Foto:                user.Foto,
+		Ktp:                 user.Ktp,
+		KK:                  user.KK,
+		SuratKesehatan:      user.SuratKesehatan,
+		Status:              user.Status,
+		CreateAt:            user.CreateAt,
+		UpdateAt:            user.UpdateAt,
+		Ijazah:              user.Ijazah,
+		KusukaUsers:         user.KusukaUsers,
+		//Pelatihan:           user.Pelatihan[0].NoSertifikat,
+	}
+
+	fmt.Println(newUser)
+	//Cari Amb	il data pelatihannya
+	/*
+		var pelatihan entity.Pelatihan
+		database.DB.Where("id_pelatihan = ?", user.Pelatihans.IdPelatihan).Find(&pelatihan)
+
+		user.Pelatihan.NamaPelatihans = pelatihan.NamaPelatihan
+		user.Pelatihan.TanggalBerakhirPelatihan = pelatihan.TanggalBerakhirPelatihan
+		user.Pelatihan.TanggalMulaiPelatihan = pelatihan.TanggalMulaiPelatihan
+		user.Pelatihan.BidangPelatihan = pelatihan.BidangPelatihan
+	*/
 	return c.JSON(user)
 }
 
@@ -299,13 +344,13 @@ func UpdateUser(c *fiber.Ctx) error {
 
 	// Update user fields
 	user.Nama = request.Nama
-	user.NoTelpon = tools.StringToInt(request.NoTelpon)
+	user.NoTelpon = request.NoTelpon
 	user.Email = request.Email
 	user.Password = request.Password
 	user.Kota = request.Kota
 	user.Provinsi = request.Provinsi
 	user.Alamat = request.Alamat
-	user.Nik = tools.StringToInt(request.Nik)
+	user.Nik = request.Nik
 	user.TempatLahir = request.TempatLahir
 	user.TanggalLahir = request.TanggalLahir
 	user.JenisKelamin = request.JenisKelamin

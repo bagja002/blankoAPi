@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"template/app/entity"
+	"template/app/models"
 	"template/pkg/database"
 	"template/pkg/tools"
 	"time"
@@ -159,4 +160,16 @@ func GenerateSertifikat(idLemdik string, idPelatihan string, c *fiber.Ctx) strin
 	database.DB.Create(&newDatabaseSertif)
 
 	return newSertifkatBaru
+}
+
+func convertUsersPelatihan(entityUsers []entity.Users) []models.Users {
+	modelUsersPelatihan := make([]models.Users, len(entityUsers))
+	for i, eup := range entityUsers {
+		modelUsersPelatihan[i] = models.Users{
+			IdUsers: eup.IdUsers,
+			Nama:    eup.Nama,
+			// Salin field dari eup ke ModelUsersPelatihan sesuai kebutuhan
+		}
+	}
+	return modelUsersPelatihan
 }

@@ -24,4 +24,5 @@ type UsersPelatihan struct {
 	TotalBayar       string
 	CreteAt          string
 	UpdateAt         string
+	//Pelatihan        Pelatihan `gorm:"foreignKey:IdPelatihan"`
 }

@@ -78,15 +78,43 @@ type Pelatihan struct {
 	JamPraktek string `json:"JamPraktek"`
 }
 
+type UsersPelatihan struct {
+	IdUserPelatihan    uint `gorm:"primary_key;auto_increment"`
+	IdUsers            uint
+	Nama               string
+	TempatTanggalLahir string
+	IdPelatihan        uint
+	NoSertifikat       string
+	NoRegistrasi       string
+	PreTest            int
+	PostTest           int
+	NilaiTeory         int
+	NilaiPraktek       int
+
+	//Nilai Materi
+	StatusPembayaran string //Pending dan Void
+	MetodoPembayaran string
+	WaktuPembayaran  string
+	Keterangan       string
+	IsActice         string
+	FileSertifikat   string
+	Institusi        string
+	TotalBayar       string
+	CreteAt          string
+	UpdateAt         string
+	//Pelatihan        Pelatihan `gorm:"foreignKey:IdPelatihan"`
+}
+
 type Users struct {
+	IdUsers             uint `gorm:"primary_key;auto_increment"`
 	Nama                string
-	NoTelpon            string
+	NoTelpon            int
 	Email               string
 	Password            string
 	Kota                string
 	Provinsi            string
 	Alamat              string
-	Nik                 string
+	Nik                 int
 	TempatLahir         string
 	TanggalLahir        string
 	JenisKelamin        string
@@ -102,8 +130,11 @@ type Users struct {
 	Ktp                 string //KTP
 	KK                  string //Kartu Keluarga
 	SuratKesehatan      string //SuratKesehatan
-	Ijazah              string
 	Status              string
 	CreateAt            string
 	UpdateAt            string
+	Ijazah              string
+	KusukaUsers         string //True or False
+
+	Pelatihan []UsersPelatihan `gorm:"foreignKey:IdUsers"`
 }

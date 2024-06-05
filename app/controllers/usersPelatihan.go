@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"template/app/entity"
 	"template/pkg/database"
 	"template/pkg/generator"
@@ -112,6 +113,7 @@ func UpdateUsersPelatihan(c *fiber.Ctx) error {
 	}
 
 	//data biasa
+	fmt.Println(usersPelatihan)
 	var request entity.UsersPelatihan
 
 	if err := c.BodyParser(&request); err != nil {
@@ -137,7 +139,7 @@ func UpdateUsersPelatihan(c *fiber.Ctx) error {
 		UpdateAt: tools.TimeNowJakarta(),
 	}
 
-	if err := tx.Model(&usersPelatihan).Where("id_pelatihan = ?", id).Updates(&updates).Error; err != nil {
+	if err := tx.Model(&usersPelatihan).Where("id_user_pelatihan = ?", id).Updates(&updates).Error; err != nil {
 		tx.Rollback()
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"pesan": "Gagal memperbarui MonitoringEvaluasi",
