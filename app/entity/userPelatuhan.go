@@ -8,6 +8,8 @@ type UsersPelatihan struct {
 	NamaPelatihan      string
 	BidangPelatihan    string
 	DetailPelatihan    string
+	TanggalMulai       string
+	TanggalBerakhir    string
 	StatusAproval      string
 	IdPelatihan        uint
 	NoSertifikat       string

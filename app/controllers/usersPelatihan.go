@@ -55,8 +55,11 @@ func CreateUserPelatihan(c *fiber.Ctx) error {
 		BidangPelatihan:    data["bidangPelatihan"],
 		DetailPelatihan:    data["DetailPelatihan"],
 		StatusAproval:      data["statusAproval"],
-		StatusPembayaran:   "pending",
-		CreteAt:            tools.TimeNowJakarta(),
+		TanggalMulai:       data["tanggalMulai"],
+		TanggalBerakhir:    data["tanggalBerakhir"],
+
+		StatusPembayaran: "pending",
+		CreteAt:          tools.TimeNowJakarta(),
 	}
 
 	database.DB.Create(&newUserPelatihan)
