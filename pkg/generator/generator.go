@@ -12,7 +12,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func GeneratorNoRegister(name string, bidang string, idPel uint, idUsers uint, idLemdik int) string {
+func GeneratorNoRegister(name string, jenis string, idPel uint, idUsers uint, idLemdik int) string {
 	// Cek di database apakah nomor yang akan di-generate sudah ada atau belum
 	var noSertif int64
 	database.DB.Model(&entity.UsersPelatihan{}).Where("id_pelatihan = ?", idPel).Count(&noSertif)
@@ -20,47 +20,67 @@ func GeneratorNoRegister(name string, bidang string, idPel uint, idUsers uint, i
 	// Ambil dari data sebelumnya
 	newNoSertif := noSertif + 1
 
-	lowBidangs := strings.ToLower(bidang)
+	/* A.201.5.24.0001
+	Lemdiklat (A : Tegal),
+	Jenis sertifikat (CBIB : 201,
+	Waktu ; bulan dan tahun 5.24)
+	dan Urutan 0001
+	*/
+
+	lowBidangs := strings.ToLower(jenis)
 
 	namaBalai := strings.ToLower(name)
 	newBalai := ""
 	switch namaBalai {
 	case "bppp medan":
-		newBalai = "MDN"
+		newBalai = "B"
+	case "puslat":
+		newBalai = "A"
 	case "bppp tegal":
-		newBalai = "TGL"
+		newBalai = "C"
 	case "bppp bitung":
-		newBalai = "BTNG"
+		newBalai = "E"
 	case "bppp ambon":
-		newBalai = "AMBN"
+		newBalai = "F"
 	case "bppp banyuwangi":
-		newBalai = "BWI"
+		newBalai = "D"
 	default:
 		newBalai = "BPPSDM"
 	}
 
+	//Sertifikasi di mulai dari 200
+
+	//Mungkin pelatihan di mulai dari 100
+
 	bidangPelatihan := ""
 	switch lowBidangs {
-	case "budidaya":
-		bidangPelatihan = "BD"
-	case "pengolahan dan pemasaran":
-		bidangPelatihan = "PM"
-	case "penangkapan":
-		bidangPelatihan = "PK"
-	case "mesin perikanan":
-		bidangPelatihan = "MP"
-	case "konservasi":
-		bidangPelatihan = "KV"
+	case "cpib":
+		bidangPelatihan = "201"
+	case "cppib":
+		bidangPelatihan = "202"
+	case "haccp":
+		bidangPelatihan = "203"
+	case "api":
+		bidangPelatihan = "204"
+	case "mpm cpib":
+		bidangPelatihan = "205"
 	case "wisata bahari":
 		bidangPelatihan = "WB"
 	default:
 		bidangPelatihan = "XX"
 	}
 
+	/* A.201.5.24.0001
+	Lemdiklat (A : Tegal),
+	Jenis sertifikat (CBIB : 201,
+	Waktu ; bulan dan tahun 5.24)
+	dan Urutan 0001
+	*/
+
 	// Membuat nomor registrasi baru
-	tanggal := time.Now().Format("2006")
+	tahun := time.Now().Format("2006")
 	bulan := time.Now().Format("02")
-	bulanRomawi := map[string]string{
+	/*bulanRomawi := map[string]string{
 		"01": "I",
 		"02": "II",
 		"03": "III",
@@ -75,11 +95,13 @@ func GeneratorNoRegister(name string, bidang string, idPel uint, idUsers uint, i
 		"12": "XII",
 	}
 
+	*/
+
 	bulanString := bulan
-	bulanRomawiString := bulanRomawi[bulanString]
+	//bulanRomawiString := bulanRomawi[bulanString]
 	noSertifFormatted := fmt.Sprintf("%04d", newNoSertif)
-	noPelatihanFormatted := fmt.Sprintf("%04d", idPel)
-	NoRegis := fmt.Sprintf("%s.%s.%s.%s.%s.%s", newBalai, bidangPelatihan, noPelatihanFormatted, bulanRomawiString, tanggal, noSertifFormatted)
+	//noPelatihanFormatted := fmt.Sprintf("%04d", idPel)
+	NoRegis := fmt.Sprintf("%s.%s.%s.%s.%s", newBalai, bidangPelatihan, bulanString, tahun, noSertifFormatted)
 
 	// Simpan nomor registrasi ke database
 	/*

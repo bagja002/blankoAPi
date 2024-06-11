@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"log"
+	"os"
 
 	"strings"
 	"template/app/entity"
@@ -56,7 +57,7 @@ func CreatePelatihan(c *fiber.Ctx) error {
 		NamaPelatihan:            request.NamaPelatihan,
 		PenyelenggaraPelatihan:   request.PenyelenggaraPelatihan,
 		DetailPelatihan:          request.DetailPelatihan,
-		FotoPelatihan:            strings.ReplaceAll(file.Filename, " ", ""),
+		FotoPelatihan:            strings.ReplaceAll(request.NamaPelatihan, " ", ""),
 		JenisPelatihan:           request.JenisPelatihan,
 		BidangPelatihan:          request.BidangPelatihan,
 		DukunganProgramTerobosan: request.DukunganProgramTerobosan,
@@ -132,7 +133,7 @@ func CreatePelatihan(c *fiber.Ctx) error {
 	//Menambahkan Masukan materi
 
 	// Simpan file ke dalam direktori static/merchant
-	if err := c.SaveFile(file, "public/static/pelatihan/"+strings.ReplaceAll(file.Filename, " ", "")); err != nil {
+	if err := c.SaveFile(file, "public/static/pelatihan/"+strings.ReplaceAll(tools.IntToString(int(newPelatihan.IdPelatihan)), " ", "")); err != nil {
 		log.Println("Berubah")
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save file", "Error": err.Error()})
 	}
@@ -182,13 +183,30 @@ func GetPelatihan(c *fiber.Ctx) error {
 	})
 }
 
+// UpdatePelatihan updates the pelatihan by ID
 func UpdatePelatihan(c *fiber.Ctx) error {
+	idAdmin, ok := c.Locals("id_admin").(int)
+	if !ok {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid or missing id_admin",
+		})
+	}
 
-	id_admin, _ := c.Locals("id_admin").(int)
-	role, _ := c.Locals("role").(string)
-	names, _ := c.Locals("name").(string)
+	role, ok := c.Locals("role").(string)
+	if !ok {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid or missing role",
+		})
+	}
 
-	tools.ValidationJwtLemdik(c, role, id_admin, names)
+	names, ok := c.Locals("name").(string)
+	if !ok {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid or missing name",
+		})
+	}
+
+	tools.ValidationJwtLemdik(c, role, idAdmin, names)
 
 	id := c.Query("id")
 
@@ -198,10 +216,12 @@ func UpdatePelatihan(c *fiber.Ctx) error {
 	BeritaAcara, _ := c.FormFile("BeritaAcara")
 
 	var pelatihan entity.Pelatihan
+	if err := database.DB.Where("id_pelatihan = ?", id).First(&pelatihan).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "Pelatihan not found",
+		})
+	}
 
-	database.DB.Where("id_pelatihan = ?", id).Find(&pelatihan)
-
-	// Menginisialisasi koneksi database
 	tx := database.DB.Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -209,122 +229,126 @@ func UpdatePelatihan(c *fiber.Ctx) error {
 		}
 	}()
 
-	if SilabusPelatihan != nil || ModuleMateri != nil || SuratPemberitahuan != nil || BeritaAcara != nil {
-		if SilabusPelatihan != nil {
-			pelatihan.SilabusPelatihan = SilabusPelatihan.Filename
-			if err := c.SaveFile(SilabusPelatihan, "public/silabus/pelatihan/"+SilabusPelatihan.Filename); err != nil {
-				tx.Rollback()
-				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-					"pesan": "Gagal menyimpan file EvaluasiRenaksi",
-					"error": err.Error(),
-				})
-			}
-		}
-
-		if ModuleMateri != nil {
-			pelatihan.ModuleMateri = ModuleMateri.Filename
-			if err := c.SaveFile(ModuleMateri, "public/silabus/pelatihan/"+ModuleMateri.Filename); err != nil {
-				tx.Rollback()
-				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-					"pesan": "Gagal menyimpan file Module Materi",
-					"error": err.Error(),
-				})
-			}
-		}
-
-		if SuratPemberitahuan != nil {
-			pelatihan.SuratPemberitahuan = SuratPemberitahuan.Filename
-			if err := c.SaveFile(SuratPemberitahuan, "public/static/suratPemberitahuan/"+SuratPemberitahuan.Filename); err != nil {
-				tx.Rollback()
-				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-					"pesan": "Gagal menyimpan file Surat Pemberitahuan",
-					"error": err.Error(),
-				})
-			}
-		}
-
-		if BeritaAcara != nil {
-			pelatihan.BeritaAcara = BeritaAcara.Filename
-			if err := c.SaveFile(BeritaAcara, "public/static/BeritaAcara/"+BeritaAcara.Filename); err != nil {
-				tx.Rollback()
-				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-					"pesan": "Gagal menyimpan file Surat Pemberitahuan",
-					"error": err.Error(),
-				})
-			}
-		}
-
-		if err := tx.Model(&pelatihan).Where("id_pelatihan = ?", id).Updates(&pelatihan).Error; err != nil {
+	// Handle file uploads and updates
+	if SilabusPelatihan != nil {
+		oldPath := "public/silabus/pelatihan/" + pelatihan.SilabusPelatihan
+		newPath := "public/silabus/pelatihan/" + SilabusPelatihan.Filename
+		if err := c.SaveFile(SilabusPelatihan, newPath); err != nil {
 			tx.Rollback()
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"pesan": "Gagal memperbarui MonitoringEvaluasi",
-				"error": err.Error(),
+				"message": "Failed to save Silabus Pelatihan",
+				"error":   err.Error(),
 			})
 		}
-
+		pelatihan.SilabusPelatihan = SilabusPelatihan.Filename
+		if pelatihan.SilabusPelatihan != "" {
+			os.Remove(oldPath)
+		}
 	}
 
-	//Yang biasanya
+	if ModuleMateri != nil {
+		oldPath := "public/silabus/pelatihan/" + pelatihan.ModuleMateri
+		newPath := "public/silabus/pelatihan/" + ModuleMateri.Filename
+		if err := c.SaveFile(ModuleMateri, newPath); err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Failed to save Module Materi",
+				"error":   err.Error(),
+			})
+		}
+		pelatihan.ModuleMateri = ModuleMateri.Filename
+		if pelatihan.ModuleMateri != "" {
+			os.Remove(oldPath)
+		}
+	}
+
+	if SuratPemberitahuan != nil {
+		oldPath := "public/static/suratPemberitahuan/" + pelatihan.SuratPemberitahuan
+		newPath := "public/static/suratPemberitahuan/" + SuratPemberitahuan.Filename
+		if err := c.SaveFile(SuratPemberitahuan, newPath); err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Failed to save Surat Pemberitahuan",
+				"error":   err.Error(),
+			})
+		}
+		pelatihan.SuratPemberitahuan = SuratPemberitahuan.Filename
+		if pelatihan.SuratPemberitahuan != "" {
+			os.Remove(oldPath)
+		}
+	}
+
+	if BeritaAcara != nil {
+		oldPath := "public/static/BeritaAcara/" + pelatihan.BeritaAcara
+		newPath := "public/static/BeritaAcara/" + BeritaAcara.Filename
+		if err := c.SaveFile(BeritaAcara, newPath); err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Failed to save Berita Acara",
+				"error":   err.Error(),
+			})
+		}
+		pelatihan.BeritaAcara = BeritaAcara.Filename
+		if pelatihan.BeritaAcara != "" {
+			os.Remove(oldPath)
+		}
+	}
+
+	// Update pelatihan fields
 	var request entity.Pelatihan
 	if err := c.BodyParser(&request); err != nil {
-		return c.Status(400).JSON(fiber.Map{
-			"pesan": "gagal reques",
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Failed to parse request body",
+			"error":   err.Error(),
 		})
 	}
 
-	updates := entity.Pelatihan{
-		NamaPelatihan:            request.NamaPelatihan,
-		PenyelenggaraPelatihan:   request.PenyelenggaraPelatihan,
-		DetailPelatihan:          request.DetailPelatihan,
-		JenisPelatihan:           request.JenisPelatihan,
-		BidangPelatihan:          request.BidangPelatihan,
-		DukunganProgramTerobosan: request.DukunganProgramTerobosan,
-		TanggalMulaiPelatihan:    request.TanggalMulaiPelatihan,
-		TanggalBerakhirPelatihan: request.TanggalBerakhirPelatihan,
-		HargaPelatihan:           request.HargaPelatihan,
-		Instruktur:               request.Instruktur,
-		Status:                   request.Status,
-		MemoPusat:                request.MemoPusat,
-		SilabusPelatihan:         request.SilabusPelatihan,
-		LokasiPelatihan:          request.LokasiPelatihan,
-		PelaksanaanPelatihan:     request.PelaksanaanPelatihan,
-		UjiKompotensi:            request.UjiKompotensi,
-		KoutaPelatihan:           request.KoutaPelatihan,
-		AsalPelatihan:            request.AsalPelatihan,
-		AsalSertifikat:           pelatihan.AsalSertifikat,
-		JenisSertifikat:          request.JenisPelatihan,
-		TtdSertifikat:            request.TtdSertifikat,
-		NoSertifikat:             request.NoSertifikat,
+	pelatihan.NamaPelatihan = request.NamaPelatihan
+	pelatihan.PenyelenggaraPelatihan = request.PenyelenggaraPelatihan
+	pelatihan.DetailPelatihan = request.DetailPelatihan
+	pelatihan.JenisPelatihan = request.JenisPelatihan
+	pelatihan.BidangPelatihan = request.BidangPelatihan
+	pelatihan.DukunganProgramTerobosan = request.DukunganProgramTerobosan
+	pelatihan.TanggalMulaiPelatihan = request.TanggalMulaiPelatihan
+	pelatihan.TanggalBerakhirPelatihan = request.TanggalBerakhirPelatihan
+	pelatihan.HargaPelatihan = request.HargaPelatihan
+	pelatihan.Instruktur = request.Instruktur
+	pelatihan.Status = request.Status
+	pelatihan.MemoPusat = request.MemoPusat
+	pelatihan.LokasiPelatihan = request.LokasiPelatihan
+	pelatihan.PelaksanaanPelatihan = request.PelaksanaanPelatihan
+	pelatihan.UjiKompotensi = request.UjiKompotensi
+	pelatihan.KoutaPelatihan = request.KoutaPelatihan
+	pelatihan.AsalPelatihan = request.AsalPelatihan
+	pelatihan.AsalSertifikat = request.AsalSertifikat
+	pelatihan.JenisSertifikat = request.JenisPelatihan
+	pelatihan.TtdSertifikat = request.TtdSertifikat
+	pelatihan.NoSertifikat = request.NoSertifikat
+	pelatihan.StatusApproval = request.StatusApproval
+	pelatihan.UpdateAt = tools.TimeNowJakarta()
+	pelatihan.PemberitahuanDiterima = request.PemberitahuanDiterima
+	pelatihan.CatatanPemberitahuanByPusat = request.CatatanPemberitahuanByPusat
+	pelatihan.PenerbitanSertifikatDiterima = request.PenerbitanSertifikatDiterima
+	pelatihan.CatatanPenerbitanByPusat = request.CatatanPemberitahuanByPusat
 
-		StatusApproval: request.StatusApproval,
-
-		UpdateAt: tools.TimeNowJakarta(),
-
-		PemberitahuanDiterima: request.PemberitahuanDiterima,
-
-		CatatanPemberitahuanByPusat:  request.CatatanPemberitahuanByPusat,
-		PenerbitanSertifikatDiterima: request.PenerbitanSertifikatDiterima,
-		CatatanPenerbitanByPusat:     request.CatatanPemberitahuanByPusat,
-	}
-
-	if err := tx.Model(&pelatihan).Where("id_pelatihan = ?", id).Updates(&updates).Error; err != nil {
+	if err := tx.Model(&pelatihan).Where("id_pelatihan = ?", id).Updates(&pelatihan).Error; err != nil {
 		tx.Rollback()
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"pesan": "Gagal memperbarui MonitoringEvaluasi",
-			"error": err.Error(),
+			"message": "Failed to update pelatihan",
+			"error":   err.Error(),
 		})
 	}
 
 	if err := tx.Commit().Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"pesan": "Gagal melakukan commit transaksi",
-			"error": err.Error(),
+			"message": "Failed to commit transaction",
+			"error":   err.Error(),
 		})
 	}
 
 	return c.JSON(fiber.Map{
-		"Pesan": "Sukses Update Pelatihan",
-		"data":  pelatihan,
+		"message": "Pelatihan updated successfully",
+		"data":    pelatihan,
 	})
 }
 

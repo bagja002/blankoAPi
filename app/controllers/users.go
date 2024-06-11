@@ -250,15 +250,11 @@ func UpdateUser(c *fiber.Ctx) error {
 		})
 	}
 
-	photoProfile, _ := c.FormFile("Foto")
-
-	Ktp, _ := c.FormFile("Ktp")
-
-	KK, _ := c.FormFile("KK")
-
-	ijasah, _ := c.FormFile("Ijazah")
-
-	suratSehat, _ := c.FormFile("SuratKesehatan")
+	photoProfile, _ := c.FormFile("Fotos")
+	Ktp, _ := c.FormFile("Ktps")
+	KK, _ := c.FormFile("KKs")
+	ijasah, _ := c.FormFile("Ijazahs")
+	suratSehat, _ := c.FormFile("SuratKesehatans")
 
 	var user entity.Users
 	if err := database.DB.First(&user, idAdmin).Error; err != nil {
@@ -266,13 +262,6 @@ func UpdateUser(c *fiber.Ctx) error {
 			"message": "User not found",
 		})
 	}
-
-	// Paths for deleting old files
-	pathKK := "public/static/profile/kk/" + user.KK
-	pathKTP := "public/static/profile/ktp/" + user.Ktp
-	pathPoto := "public/static/profile/fotoProfile/" + user.Foto
-	pathIzasah := "public/static/profile/ijazah/" + user.Ijazah
-	pathSuratSehat := "public/static/profile/suratSehat/" + user.SuratKesehatan
 
 	tx := database.DB.Begin()
 	defer func() {
@@ -283,62 +272,93 @@ func UpdateUser(c *fiber.Ctx) error {
 
 	// Handle file uploads and updates
 	if photoProfile != nil {
-		user.Foto = photoProfile.Filename
-		os.Remove(pathPoto)
-		if err := c.SaveFile(photoProfile, "public/static/profile/fotoProfile/"+photoProfile.Filename); err != nil {
+		oldPath := "public/static/profile/fotoProfile/" + user.Foto
+		newPath := "public/static/profile/fotoProfile/" + photoProfile.Filename
+		if err := c.SaveFile(photoProfile, newPath); err != nil {
 			tx.Rollback()
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"message": "Failed to save photo profile",
 				"error":   err.Error(),
 			})
 		}
+		user.Foto = photoProfile.Filename
+		fmt.Println(oldPath)
+		fmt.Println(newPath)
+		if user.Foto != "" {
+			os.Remove(oldPath)
+		}
 	}
 
 	if Ktp != nil {
-		user.Ktp = Ktp.Filename
-		os.Remove(pathKTP)
-		if err := c.SaveFile(Ktp, "public/static/profile/ktp/"+Ktp.Filename); err != nil {
+		oldPath := "public/static/profile/ktp/" + user.Ktp
+		newPath := "public/static/profile/ktp/" + Ktp.Filename
+		if err := c.SaveFile(Ktp, newPath); err != nil {
 			tx.Rollback()
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"message": "Failed to save KTP",
 				"error":   err.Error(),
 			})
 		}
+
+		// Simpan nama file KTP baru ke user
+		user.Ktp = Ktp.Filename
+
+		// Hapus file lama jika ada
+		if user.Ktp != "" {
+			if err := os.Remove(oldPath); err != nil {
+				// Mencetak error jika gagal menghapus file lama (optional)
+				fmt.Println("Failed to remove old KTP:", err)
+			} else {
+				fmt.Println("Old KTP file removed successfully")
+			}
+		}
 	}
 
 	if KK != nil {
-		user.KK = KK.Filename
-		os.Remove(pathKK)
-		if err := c.SaveFile(KK, "public/static/profile/kk/"+KK.Filename); err != nil {
+		oldPath := "public/static/profile/kk/" + user.KK
+		newPath := "public/static/profile/kk/" + KK.Filename
+		if err := c.SaveFile(KK, newPath); err != nil {
 			tx.Rollback()
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"message": "Failed to save KK",
 				"error":   err.Error(),
 			})
 		}
+		user.KK = KK.Filename
+		if user.KK != "" {
+			os.Remove(oldPath)
+		}
 	}
 
 	if ijasah != nil {
-		user.Ijazah = ijasah.Filename
-		os.Remove(pathIzasah)
-		if err := c.SaveFile(ijasah, "public/static/profile/ijazah/"+ijasah.Filename); err != nil {
+		oldPath := "public/static/profile/ijazah/" + user.Ijazah
+		newPath := "public/static/profile/ijazah/" + ijasah.Filename
+		if err := c.SaveFile(ijasah, newPath); err != nil {
 			tx.Rollback()
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"message": "Failed to save Ijazah",
 				"error":   err.Error(),
 			})
 		}
+		user.Ijazah = ijasah.Filename
+		if user.Ijazah != "" {
+			os.Remove(oldPath)
+		}
 	}
 
 	if suratSehat != nil {
-		user.SuratKesehatan = suratSehat.Filename
-		os.Remove(pathSuratSehat)
-		if err := c.SaveFile(suratSehat, "public/static/profile/suratSehat/"+suratSehat.Filename); err != nil {
+		oldPath := "public/static/profile/suratSehat/" + user.SuratKesehatan
+		newPath := "public/static/profile/suratSehat/" + suratSehat.Filename
+		if err := c.SaveFile(suratSehat, newPath); err != nil {
 			tx.Rollback()
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"message": "Failed to save Surat Kesehatan",
 				"error":   err.Error(),
 			})
+		}
+		user.SuratKesehatan = suratSehat.Filename
+		if user.SuratKesehatan != "" {
+			os.Remove(oldPath)
 		}
 	}
 
