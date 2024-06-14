@@ -67,7 +67,7 @@ func GeneratorNoRegister(name string, jenis string, idPel uint, idUsers uint, id
 	case "wisata bahari":
 		bidangPelatihan = "WB"
 	default:
-		bidangPelatihan = "XX"
+		bidangPelatihan = "200"
 	}
 
 	/* A.201.5.24.0001
