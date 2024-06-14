@@ -215,6 +215,8 @@ func UpdatePelatihan(c *fiber.Ctx) error {
 	SuratPemberitahuan, _ := c.FormFile("SuratPemberitahuan")
 	BeritaAcara, _ := c.FormFile("BeritaAcara")
 
+	photoPelatihan, _ := c.FormFile("photo_pelatihan")
+
 	var pelatihan entity.Pelatihan
 	if err := database.DB.Where("id_pelatihan = ?", id).First(&pelatihan).Error; err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
@@ -242,6 +244,22 @@ func UpdatePelatihan(c *fiber.Ctx) error {
 		}
 		pelatihan.SilabusPelatihan = SilabusPelatihan.Filename
 		if pelatihan.SilabusPelatihan != "" {
+			os.Remove(oldPath)
+		}
+	}
+
+	if photoPelatihan != nil {
+		oldPath := "public/static/pelatihan/" + pelatihan.FotoPelatihan
+		newPath := "public/static/pelatihan/" + photoPelatihan.Filename
+		if err := c.SaveFile(photoPelatihan, newPath); err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Failed to save Silabus Pelatihan",
+				"error":   err.Error(),
+			})
+		}
+		pelatihan.FotoPelatihan = photoPelatihan.Filename
+		if pelatihan.FotoPelatihan != "" {
 			os.Remove(oldPath)
 		}
 	}
