@@ -127,22 +127,13 @@ func UpdateLemdik(c *fiber.Ctx) error {
 	database.DB.Where("id_lemdik = ?", id_admin).Find(&lemdik)
 
 	var data map[string]string
-	var existingEmail entity.Lemdiklat
-	email := data["email"]
-
-	err := database.DB.Where("email = ?", email).Find(&existingEmail).Error
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"Message": err,
-		})
-	}
 
 	//cek email
 
 	update := entity.Lemdiklat{
 		NamaLemdik:   data["nama_lemdik"],
 		NoTelpon:     tools.StringToInt(data["no_telpon"]),
-		Email:        email,
+		Email:        data["email"],
 		Password:     tools.GeneratePassword(data["password"]),
 		Alamat:       data["alamat"],
 		Deskripsi:    data["deskripsi"],
