@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"template/app/entity"
+	"template/pkg/config"
 	"template/pkg/database"
 	"template/pkg/generator"
 	"template/pkg/tools"
@@ -222,6 +223,8 @@ func GetUsersByPelatihan(c *fiber.Ctx) error {
 		tools.ValidationJwt(c, role, id_admin, names)
 
 	*/
+	viper := config.NewViper()
+	baseUrl := viper.GetString("web.baseUrl")
 
 	idPelatihan := c.Query("idPelatihan")
 
@@ -230,6 +233,8 @@ func GetUsersByPelatihan(c *fiber.Ctx) error {
 	if err := database.DB.Preload("UserPelatihan").Find(&pelatihan, idPelatihan).Error; err != nil {
 		return c.Status(404).SendString(err.Error())
 	}
+
+	pelatihan.FotoPelatihan = baseUrl + "/public/static/pelatihan/" + pelatihan.FotoPelatihan
 
 	return c.JSON(pelatihan)
 }

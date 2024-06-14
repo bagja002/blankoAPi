@@ -57,7 +57,7 @@ func CreatePelatihan(c *fiber.Ctx) error {
 		NamaPelatihan:            request.NamaPelatihan,
 		PenyelenggaraPelatihan:   request.PenyelenggaraPelatihan,
 		DetailPelatihan:          request.DetailPelatihan,
-		FotoPelatihan:            strings.ReplaceAll(request.NamaPelatihan, " ", ""),
+		FotoPelatihan:            strings.ReplaceAll(file.Filename, " ", ""),
 		JenisPelatihan:           request.JenisPelatihan,
 		BidangPelatihan:          request.BidangPelatihan,
 		DukunganProgramTerobosan: request.DukunganProgramTerobosan,
@@ -133,7 +133,7 @@ func CreatePelatihan(c *fiber.Ctx) error {
 	//Menambahkan Masukan materi
 
 	// Simpan file ke dalam direktori static/merchant
-	if err := c.SaveFile(file, "public/static/pelatihan/"+strings.ReplaceAll(tools.IntToString(int(newPelatihan.IdPelatihan)), " ", "")); err != nil {
+	if err := c.SaveFile(file, "public/static/pelatihan/"+strings.ReplaceAll(file.Filename, " ", "")); err != nil {
 		log.Println("Berubah")
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save file", "Error": err.Error()})
 	}
