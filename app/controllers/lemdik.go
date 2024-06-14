@@ -138,11 +138,6 @@ func UpdateLemdik(c *fiber.Ctx) error {
 	}
 
 	//cek email
-	if existingEmail.Email == email {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"Message": "This Email is Register",
-		})
-	}
 
 	update := entity.Lemdiklat{
 		NamaLemdik:   data["nama_lemdik"],
