@@ -46,7 +46,7 @@ func SetupRoutesFiber(app *fiber.App) {
 	//lemdik Area
 	lemdik.Post("/login", controllers.LoginLemdik)
 	lemdik.Get("/getLemdik", middleware.JwtProtect(), controllers.GetLemdik)
-	lemdik.Put("/update", controllers.UpdateLemdik)
+	lemdik.Put("/update", middleware.JwtProtect(), controllers.UpdateLemdik)
 	lemdik.Get("/getAllUsers", middleware.JwtProtect(), controllers.GetAllUsers)
 	//Pelatihan
 	lemdik.Post("/createPelatihan", middleware.JwtProtect(), controllers.CreatePelatihan)
@@ -61,6 +61,8 @@ func SetupRoutesFiber(app *fiber.App) {
 	//Sarpras
 	lemdik.Post("/createSarpras", middleware.JwtProtect(), controllers.CreateSarpras)
 	lemdik.Get("/getSarpras", middleware.JwtProtect(), controllers.GetSarpras)
+	lemdik.Put("/updateSarpras", middleware.JwtProtect(), controllers.UpdateSarpras)
+	lemdik.Delete("/deleteSarpras", middleware.JwtProtect(), controllers.DeleteSarpras)
 
 	//Pelatihan Users Area
 
@@ -82,6 +84,7 @@ func SetupRoutesFiber(app *fiber.App) {
 	app.Get("/public/module/pelatihan/:string", static.StaticModulePelatihan)
 	app.Get("/public/static/BeritaAcara/:string", static.StaticBeritaAcara)
 	app.Get("/public/static/suratPemberitahuan/:string", static.StaticSuratPemberitahuan)
+	app.Get("/public/static/sarpras/:string", static.StaticSarpras)
 
 	//Users Static area
 

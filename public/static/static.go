@@ -76,3 +76,8 @@ func StaticSertifikasi(c *fiber.Ctx) error {
 	params := c.Params("string")
 	return c.SendFile("public/static/sertifikasi/" + params)
 }
+
+func StaticSarpras(c *fiber.Ctx) error {
+	params := c.Params("string")
+	return c.SendFile("public/static/sarpras/" + params)
+}

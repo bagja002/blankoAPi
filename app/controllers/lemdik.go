@@ -115,21 +115,53 @@ func GetLemdik(c *fiber.Ctx) error {
 }
 
 func UpdateLemdik(c *fiber.Ctx) error {
+	idAdmin, ok := c.Locals("id_admin").(int)
+	if !ok {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"Pesan": "Unauthorized: Invalid admin ID",
+		})
+	}
+	role, ok := c.Locals("role").(string)
+	if !ok {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"Pesan": "Unauthorized: Invalid role",
+		})
+	}
+	names, ok := c.Locals("name").(string)
+	if !ok {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"Pesan": "Unauthorized: Invalid name",
+		})
+	}
 
-	id_admin, _ := c.Locals("id_admin").(int)
-	role, _ := c.Locals("role").(string)
-	names, _ := c.Locals("name").(string)
+	// Validasi JWT
+	tools.ValidationJwtLemdik(c, role, idAdmin, names)
 
-	tools.ValidationJwtLemdik(c, role, id_admin, names)
+	// Mendapatkan data yang akan diupdate dari request body
+	var data map[string]string
+	if err := c.BodyParser(&data); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"Pesan": "Bad Request: " + err.Error(),
+		})
+	}
+
+	// Memulai transaksi
+	tx := database.DB.Begin()
+	if tx.Error != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"Pesan": "Failed to begin transaction: " + tx.Error.Error(),
+		})
+	}
 
 	var lemdik entity.Lemdiklat
+	if err := tx.Where("id_lemdik = ?", idAdmin).First(&lemdik).Error; err != nil {
+		tx.Rollback()
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"Pesan": "Data not found: " + err.Error(),
+		})
+	}
 
-	database.DB.Where("id_lemdik = ?", id_admin).Find(&lemdik)
-
-	var data map[string]string
-
-	//cek email
-
+	// Membuat struct update dengan data yang baru
 	update := entity.Lemdiklat{
 		NamaLemdik:   data["nama_lemdik"],
 		NoTelpon:     tools.StringToInt(data["no_telpon"]),
@@ -137,11 +169,38 @@ func UpdateLemdik(c *fiber.Ctx) error {
 		Password:     tools.GeneratePassword(data["password"]),
 		Alamat:       data["alamat"],
 		Deskripsi:    data["deskripsi"],
-		LastNosertif: data["last_sertif"],
+		LastNosertif: data["no_last_sertifikat"],
 		CreateAt:     tools.TimeNowJakarta(),
 	}
 
-	database.DB.Model(&lemdik).Updates(&update)
+	// Menambahkan record sertifikat jika ada update pada no_last_sertifikat
+	if update.LastNosertif != "" {
+		newLastRecord := entity.Sertifikat{
+			IdLemdik:    uint(idAdmin),
+			NoSertfikat: data["no_last_sertifikat"],
+		}
+		if err := tx.Create(&newLastRecord).Error; err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"Pesan": "Failed to create new certificate record: " + err.Error(),
+			})
+		}
+	}
+
+	// Melakukan update pada data Lemdiklat
+	if err := tx.Model(&lemdik).Updates(&update).Error; err != nil {
+		tx.Rollback()
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"Pesan": "Failed to update Lemdiklat: " + err.Error(),
+		})
+	}
+
+	// Commit transaksi
+	if err := tx.Commit().Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"Pesan": "Failed to commit transaction: " + err.Error(),
+		})
+	}
 
 	return c.JSON(fiber.Map{
 		"Pesan": "Sukses Update Data",

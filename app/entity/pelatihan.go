@@ -46,6 +46,7 @@ type Pelatihan struct {
 	PemberitahuanDiterima       string
 	SuratPemberitahuan          string //pdf
 	CatatanPemberitahuanByPusat string
+	DeskripsiSertifikat         string
 
 	PenerbitanSertifikatDiterima, BeritaAcara, CatatanPenerbitanByPusat string
 	SarprasPelatihan                                                    []SarprasPelatihan `gorm:"foreignKey:IdPelatihan"`

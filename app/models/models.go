@@ -66,6 +66,7 @@ type Pelatihan struct {
 	TtdSertifikat            string `json:"ttd_sertifikat"`
 	NoSertifikat             string `json:"no_sertifikat"`
 	IdSaranaPrasarana        string `json:"id_sarana_prasarana"`
+	DeskripsiSertifikat      string `json:"deskripsi_sertifikat"`
 
 	IdKonsumsi string `json:"id_konsumsi"`
 	CreateAt   string `json:"created_at"`

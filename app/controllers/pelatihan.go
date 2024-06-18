@@ -67,14 +67,14 @@ func CreatePelatihan(c *fiber.Ctx) error {
 		Instruktur:               request.Instruktur,
 		Status:                   "Belum Publish",
 		MemoPusat:                request.MemoPusat,
-		SilabusPelatihan:         request.SilabusPelatihan,
-		LokasiPelatihan:          request.LokasiPelatihan,
-		PelaksanaanPelatihan:     request.PelaksanaanPelatihan,
+		//SilabusPelatihan:         request.SilabusPelatihan,  nanti jadikan ini sebagai file jadikan dia wajib
+		LokasiPelatihan:      request.LokasiPelatihan,
+		PelaksanaanPelatihan: request.PelaksanaanPelatihan,
 
 		//Ketika Uji Ada Uji kom
-		UjiKompotensi:   request.UjiKompotensi,
+		UjiKompotensi:   request.UjiKompotensi, //isinya true or false
 		KoutaPelatihan:  request.KoutaPelatihan,
-		AsalPelatihan:   request.AsalPelatihan,
+		AsalPelatihan:   request.AsalPelatihan, //Asal Peserta pelatihan
 		AsalSertifikat:  request.AsalSertifikat,
 		JenisSertifikat: request.JenisSertifikat,
 		TtdSertifikat:   request.TtdSertifikat,
@@ -103,9 +103,10 @@ func CreatePelatihan(c *fiber.Ctx) error {
 	}
 
 	//CEK LALO HASILNYA ITU TRUE
-	//tambahkan pelatihan
 
-	//tampabih sarpras
+	//tambahin sarpras
+
+	//Inputan sarpras ini adalah stirng yang nanti di pecah menjadi list
 
 	id_sarpras := request.IdSaranaPrasarana
 
@@ -130,7 +131,7 @@ func CreatePelatihan(c *fiber.Ctx) error {
 
 	}
 
-	//Menambahkan Masukan materi
+	//Menambahkan Data Pelatihan Materi
 
 	// Simpan file ke dalam direktori static/merchant
 	if err := c.SaveFile(file, "public/static/pelatihan/"+strings.ReplaceAll(file.Filename, " ", "")); err != nil {
@@ -186,23 +187,11 @@ func GetPelatihan(c *fiber.Ctx) error {
 // UpdatePelatihan updates the pelatihan by ID
 func UpdatePelatihan(c *fiber.Ctx) error {
 	idAdmin, ok := c.Locals("id_admin").(int)
-	if !ok {
+	role, okRole := c.Locals("role").(string)
+	names, okName := c.Locals("name").(string)
+	if !ok || !okRole || !okName {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "Invalid or missing id_admin",
-		})
-	}
-
-	role, ok := c.Locals("role").(string)
-	if !ok {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "Invalid or missing role",
-		})
-	}
-
-	names, ok := c.Locals("name").(string)
-	if !ok {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "Invalid or missing name",
+			"message": "Invalid or missing id_admin, role, or name",
 		})
 	}
 
@@ -214,7 +203,6 @@ func UpdatePelatihan(c *fiber.Ctx) error {
 	ModuleMateri, _ := c.FormFile("ModuleMateri")
 	SuratPemberitahuan, _ := c.FormFile("SuratPemberitahuan")
 	BeritaAcara, _ := c.FormFile("BeritaAcara")
-
 	photoPelatihan, _ := c.FormFile("photo_pelatihan")
 
 	var pelatihan entity.Pelatihan
@@ -233,7 +221,6 @@ func UpdatePelatihan(c *fiber.Ctx) error {
 
 	// Handle file uploads and updates
 	if SilabusPelatihan != nil {
-		oldPath := "public/silabus/pelatihan/" + pelatihan.SilabusPelatihan
 		newPath := "public/silabus/pelatihan/" + SilabusPelatihan.Filename
 		if err := c.SaveFile(SilabusPelatihan, newPath); err != nil {
 			tx.Rollback()
@@ -242,30 +229,30 @@ func UpdatePelatihan(c *fiber.Ctx) error {
 				"error":   err.Error(),
 			})
 		}
-		pelatihan.SilabusPelatihan = SilabusPelatihan.Filename
+		oldPath := "public/silabus/pelatihan/" + pelatihan.SilabusPelatihan
 		if pelatihan.SilabusPelatihan != "" {
 			os.Remove(oldPath)
 		}
+		pelatihan.SilabusPelatihan = SilabusPelatihan.Filename
 	}
 
 	if photoPelatihan != nil {
-		oldPath := "public/static/pelatihan/" + pelatihan.FotoPelatihan
 		newPath := "public/static/pelatihan/" + photoPelatihan.Filename
 		if err := c.SaveFile(photoPelatihan, newPath); err != nil {
 			tx.Rollback()
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"message": "Failed to save Silabus Pelatihan",
+				"message": "Failed to save photo Pelatihan",
 				"error":   err.Error(),
 			})
 		}
-		pelatihan.FotoPelatihan = photoPelatihan.Filename
+		oldPath := "public/static/pelatihan/" + pelatihan.FotoPelatihan
 		if pelatihan.FotoPelatihan != "" {
 			os.Remove(oldPath)
 		}
+		pelatihan.FotoPelatihan = photoPelatihan.Filename
 	}
 
 	if ModuleMateri != nil {
-		oldPath := "public/silabus/pelatihan/" + pelatihan.ModuleMateri
 		newPath := "public/silabus/pelatihan/" + ModuleMateri.Filename
 		if err := c.SaveFile(ModuleMateri, newPath); err != nil {
 			tx.Rollback()
@@ -274,14 +261,14 @@ func UpdatePelatihan(c *fiber.Ctx) error {
 				"error":   err.Error(),
 			})
 		}
-		pelatihan.ModuleMateri = ModuleMateri.Filename
+		oldPath := "public/silabus/pelatihan/" + pelatihan.ModuleMateri
 		if pelatihan.ModuleMateri != "" {
 			os.Remove(oldPath)
 		}
+		pelatihan.ModuleMateri = ModuleMateri.Filename
 	}
 
 	if SuratPemberitahuan != nil {
-		oldPath := "public/static/suratPemberitahuan/" + pelatihan.SuratPemberitahuan
 		newPath := "public/static/suratPemberitahuan/" + SuratPemberitahuan.Filename
 		if err := c.SaveFile(SuratPemberitahuan, newPath); err != nil {
 			tx.Rollback()
@@ -290,14 +277,14 @@ func UpdatePelatihan(c *fiber.Ctx) error {
 				"error":   err.Error(),
 			})
 		}
-		pelatihan.SuratPemberitahuan = SuratPemberitahuan.Filename
+		oldPath := "public/static/suratPemberitahuan/" + pelatihan.SuratPemberitahuan
 		if pelatihan.SuratPemberitahuan != "" {
 			os.Remove(oldPath)
 		}
+		pelatihan.SuratPemberitahuan = SuratPemberitahuan.Filename
 	}
 
 	if BeritaAcara != nil {
-		oldPath := "public/static/BeritaAcara/" + pelatihan.BeritaAcara
 		newPath := "public/static/BeritaAcara/" + BeritaAcara.Filename
 		if err := c.SaveFile(BeritaAcara, newPath); err != nil {
 			tx.Rollback()
@@ -306,10 +293,11 @@ func UpdatePelatihan(c *fiber.Ctx) error {
 				"error":   err.Error(),
 			})
 		}
-		pelatihan.BeritaAcara = BeritaAcara.Filename
+		oldPath := "public/static/BeritaAcara/" + pelatihan.BeritaAcara
 		if pelatihan.BeritaAcara != "" {
 			os.Remove(oldPath)
 		}
+		pelatihan.BeritaAcara = BeritaAcara.Filename
 	}
 
 	// Update pelatihan fields
@@ -398,9 +386,7 @@ func PublishSertifikat(c *fiber.Ctx) error {
 			"data":  pelatihan.NoSertifikat,
 		})
 	}
-
 	//BeritaAcara, _ := c.FormFile("BeritaAcara")
-
 	//c.SaveFile(BeritaAcara, "public/static/BeritaAcara/"+BeritaAcara.Filename)
 
 	//Generate Sertifikat per balai

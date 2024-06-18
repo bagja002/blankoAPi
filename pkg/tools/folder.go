@@ -23,6 +23,9 @@ func CreateFolder() {
 		"public/static/suratPemberitahuan",
 		"public/static/BeritaAcara",
 		"public/static/fileSertifikat",
+
+		//Folder Untuk Foto Sarpras
+
 	}
 
 	for _, folder := range folders {
