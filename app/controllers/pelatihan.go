@@ -174,7 +174,10 @@ func GetPelatihan(c *fiber.Ctx) error {
 		queryBase = queryBase.Where("id_lemdik = ? ", idLemdik)
 	}
 
-	queryBase.Preload("UserPelatihan").Find(&pelatihan)
+	queryBase.Preload("UserPelatihan").
+		Preload("SarprasPelatihan").
+		Preload("MateriPelatihan").
+		Find(&pelatihan)
 
 	for i, _ := range pelatihan {
 		pelatihan[i].FotoPelatihan = baseUrl + "/public/static/pelatihan/" + pelatihan[i].FotoPelatihan

@@ -4,7 +4,7 @@
     },
     "web": {
       "baseUrl":"https://api-elaut.ikulatluh.cloud",
-      "baseUrl":"http://127.0.0.1:8000",
+      "baseUrls":"http://127.0.0.1:8000",
       "prefork": false,
       "port": ":8000"
     },

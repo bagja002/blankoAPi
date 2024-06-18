@@ -24,12 +24,12 @@ func CreateMateriPelatihan(c *fiber.Ctx) error {
 		})
 	}
 
-	idPelatihan := c.Query("idPelatihan")
+	idPelatihan := c.Query("id_pelatihan")
 
 	var pelatihan entity.Pelatihan
 
 	database.DB.Where("id_pelatihan = ? ", idPelatihan).Find(&pelatihan)
-	if pelatihan.IdPelatihan != 0 {
+	if pelatihan.IdPelatihan == 0 {
 		return c.Status(400).JSON(fiber.Map{
 			"Pesan": "tidak ada pelatihan",
 		})
