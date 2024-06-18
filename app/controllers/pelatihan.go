@@ -15,6 +15,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// Materi Pelatihan
+
 func TestPreloadPencapaian(c *fiber.Ctx) error {
 
 	var Pelatihan entity.Pelatihan

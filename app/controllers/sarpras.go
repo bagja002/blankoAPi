@@ -81,7 +81,7 @@ func GetSarpras(c *fiber.Ctx) error {
 
 	// Eksekusi query dan simpan hasilnya ke dalam slice Sarpras
 	var Sarpras []entity.Sarpras
-	baseQuery.Find(&Sarpras)
+	baseQuery.Where("id_lemdik = ?", id_admin).Find(&Sarpras)
 
 	viper := config.NewViper()
 	baseUrl := viper.GetString("web.baseUrl")
