@@ -13,6 +13,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	//"template/app/models"
+	"template/pkg/config"
 	"template/pkg/database"
 	"template/pkg/tools"
 )
@@ -119,56 +120,26 @@ func GetUserByID(c *fiber.Ctx) error {
 	tools.ValidationJwtUsers(c, role, id_admin, names)
 
 	var user entity.Users
-	if err := database.DB.Preload("UsersPelatihan").Find(&user, id_admin).Error; err != nil {
+	if err := database.DB.Preload("Pelatihan").Find(&user, id_admin).Error; err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"Message": "User not found",
 		})
 	}
 
-	newUser := models.Users{
-		IdUsers:             user.IdUsers,
-		Nama:                user.Nama,
-		NoTelpon:            user.NoTelpon,
-		Email:               user.Email,
-		Password:            user.Password,
-		Kota:                user.Kota,
-		Provinsi:            user.Provinsi,
-		Alamat:              user.Alamat,
-		Nik:                 user.Nik,
-		TempatLahir:         user.TempatLahir,
-		TanggalLahir:        user.TanggalLahir,
-		JenisKelamin:        user.JenisKelamin,
-		Pekerjaan:           user.Pekerjaan,
-		GolonganDarah:       user.GolonganDarah,
-		StatusMenikah:       user.StatusMenikah,
-		Kewarganegaraan:     user.Kewarganegaraan,
-		IbuKandung:          user.IbuKandung,
-		NegaraTujuanBekerja: user.NegaraTujuanBekerja,
-		PendidikanTerakhir:  user.PendidikanTerakhir,
-		Agama:               user.Agama,
-		Foto:                user.Foto,
-		Ktp:                 user.Ktp,
-		KK:                  user.KK,
-		SuratKesehatan:      user.SuratKesehatan,
-		Status:              user.Status,
-		CreateAt:            user.CreateAt,
-		UpdateAt:            user.UpdateAt,
-		Ijazah:              user.Ijazah,
-		KusukaUsers:         user.KusukaUsers,
-		//Pelatihan.:           user.Pelatihan[0].NoSertifikat,
-	}
+	viper := config.NewViper()
+	baseUrl := viper.GetString("web.baseUrl")
 
-	fmt.Println(newUser)
-	//Cari Amb	il data pelatihannya
-	/*
-		var pelatihan entity.Pelatihan
-		database.DB.Where("id_pelatihan = ?", user.Pelatihans.IdPelatihan).Find(&pelatihan)
+	//Foto
+	user.Foto = baseUrl + "/public/static/profile/fotoProfile/" + user.Foto
 
-		user.Pelatihan.NamaPelatihans = pelatihan.NamaPelatihan
-		user.Pelatihan.TanggalBerakhirPelatihan = pelatihan.TanggalBerakhirPelatihan
-		user.Pelatihan.TanggalMulaiPelatihan = pelatihan.TanggalMulaiPelatihan
-		user.Pelatihan.BidangPelatihan = pelatihan.BidangPelatihan
-	*/
+	//KTP
+	user.Ktp = baseUrl + "/public/static/profile/ktp/" + user.Ktp
+	//KK
+	user.KK = baseUrl + "/public/static/profile/kk/" + user.KK
+	//Ijasah
+	user.Ijazah = baseUrl + "/public/static/profile/kk/" + user.KK
+	//Surat Kesehatan
+
 	return c.JSON(user)
 }
 
