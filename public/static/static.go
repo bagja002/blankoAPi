@@ -29,6 +29,10 @@ func StaticBeritaAcara(c *fiber.Ctx) error {
 	params := c.Params("string")
 	return c.SendFile("public/static/BeritaAcara/" + params)
 }
+func StaticMemo(c *fiber.Ctx) error {
+	params := c.Params("string")
+	return c.SendFile("public/static/memo/" + params)
+}
 
 func StaticSuratPemberitahuan(c *fiber.Ctx) error {
 	params := c.Params("string")

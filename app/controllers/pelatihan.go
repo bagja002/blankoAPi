@@ -203,6 +203,10 @@ func GetPelatihan(c *fiber.Ctx) error {
 	for p, _ := range pelatihan {
 		pelatihan[p].ModuleMateri = baseUrl + "/public/module/pelatihan/" + pelatihan[p].SilabusPelatihan
 	}
+	//Memo
+	for p, _ := range pelatihan {
+		pelatihan[p].MemoPusat = baseUrl + "/public/static/memo/" + pelatihan[p].MemoPusat
+	}
 
 	return c.JSON(fiber.Map{
 		"Pesan": "Sukses Mengambil Data",

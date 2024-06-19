@@ -25,6 +25,8 @@ func CreateFolder() {
 		"public/static/BeritaAcara",
 		"public/static/fileSertifikat",
 
+		"public/static/memo",
+
 		//Folder Untuk Foto Sarpras
 
 	}

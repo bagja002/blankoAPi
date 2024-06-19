@@ -81,13 +81,15 @@ func SetupRoutesFiber(app *fiber.App) {
 	app.Get("/public/static/pelatihan/:string", static.StaticPelatihan)
 	app.Get("/public/static/prasarana/:string", static.StaticPrasarana)
 	app.Get("/public/static/profile/:string", static.StaticProfile)
-	app.Get("/public/silabus/pelatihan/:string", static.StaticSilabusPelatihan)
 	app.Get("/public/silabus/sertifikasi/:string", static.StaticSilabusSertifikasi)
+	app.Get("/public/static/sarpras/:string", static.StaticSarpras)
+
+	//Get Pelatihan FIle
+	app.Get("/public/silabus/pelatihan/:string", static.StaticSilabusPelatihan)
 	app.Get("/public/module/pelatihan/:string", static.StaticModulePelatihan)
 	app.Get("/public/static/BeritaAcara/:string", static.StaticBeritaAcara)
 	app.Get("/public/static/suratPemberitahuan/:string", static.StaticSuratPemberitahuan)
-	app.Get("/public/static/sarpras/:string", static.StaticSarpras)
-
+	app.Get("/public/static/memo/:string", static.StaticMemo)
 	//Get Users File File
 
 	app.Get("/public/static/profile/fotoProfile/:string", static.StaticFotoUsers)
