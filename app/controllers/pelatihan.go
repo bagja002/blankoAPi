@@ -47,6 +47,11 @@ func CreatePelatihan(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"Message": "Failed to retrieve file", "Error": err.Error()})
 	}
 
+	file2, err := c.FormFile("silabus_pelatihan")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"Message": "Failed to retrieve file", "Error": err.Error()})
+	}
+
 	//Inputan Biasa
 	var request models.Pelatihan
 	if err := c.BodyParser(&request); err != nil {
@@ -56,6 +61,7 @@ func CreatePelatihan(c *fiber.Ctx) error {
 	newPelatihan := entity.Pelatihan{
 		IdLemdik:                 uint(id_admin),
 		KodePelatihan:            request.KodePelatihan,
+		SilabusPelatihan:         file2.Filename,
 		NamaPelatihan:            request.NamaPelatihan,
 		PenyelenggaraPelatihan:   request.PenyelenggaraPelatihan,
 		DetailPelatihan:          request.DetailPelatihan,
@@ -137,7 +143,12 @@ func CreatePelatihan(c *fiber.Ctx) error {
 
 	// Simpan file ke dalam direktori static/merchant
 	if err := c.SaveFile(file, "public/static/pelatihan/"+strings.ReplaceAll(file.Filename, " ", "")); err != nil {
-		log.Println("Berubah")
+
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save file", "Error": err.Error()})
+	}
+
+	if err := c.SaveFile(file2, "public/silabus/pelatihan/"+file2.Filename); err != nil {
+
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save file", "Error": err.Error()})
 	}
 
