@@ -105,4 +105,6 @@ func SetupRoutesFiber(app *fiber.App) {
 
 	///Cek Sertifikat
 	app.Post("/cekSertifikat", controllers.CekSertifikat)
+
+	app.Post("/exportPesertaPelatihan", controllers.ExportPesertaPelatihan)
 }
