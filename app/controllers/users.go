@@ -119,7 +119,7 @@ func GetUserByID(c *fiber.Ctx) error {
 	tools.ValidationJwtUsers(c, role, id_admin, names)
 
 	var user entity.Users
-	if err := database.DB.Preload("Pelatihan").Find(&user, id_admin).Error; err != nil {
+	if err := database.DB.Preload("UsersPelatihan").Find(&user, id_admin).Error; err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"Message": "User not found",
 		})
