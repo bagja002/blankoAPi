@@ -202,7 +202,7 @@ func CekSertifikat(c *fiber.Ctx) error {
 
 	var users entity.UsersPelatihan
 	var data map[string]string
-
+	fmt.Println(data["no_registrasi"])
 	database.DB.Where("no_registrasi = ? ", data["no_registrasi"]).Find(&users)
 
 	if users.NoRegistrasi == "" {
