@@ -17,11 +17,14 @@ func StaticSilabusSertifikasi(c *fiber.Ctx) error {
 	params := c.Params("string")
 	return c.SendFile("public/silabus/sertifikasi/" + params)
 }
+
+// Done
 func StaticModulePelatihan(c *fiber.Ctx) error {
 	params := c.Params("string")
 	return c.SendFile("public/module/pelatihan/" + params)
 }
 
+// Done
 func StaticBeritaAcara(c *fiber.Ctx) error {
 	params := c.Params("string")
 	return c.SendFile("public/static/BeritaAcara/" + params)

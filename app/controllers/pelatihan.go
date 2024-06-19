@@ -183,6 +183,27 @@ func GetPelatihan(c *fiber.Ctx) error {
 		pelatihan[i].FotoPelatihan = baseUrl + "/public/static/pelatihan/" + pelatihan[i].FotoPelatihan
 	}
 
+	//File File yang harus di Tambahkan
+
+	//Surat Pemberitahuan
+	for z, _ := range pelatihan {
+		pelatihan[z].SuratPemberitahuan = baseUrl + "/public/static/suratPemberitahuan/" + pelatihan[z].SuratPemberitahuan
+	}
+
+	//BeritaAcara
+	for x, _ := range pelatihan {
+		pelatihan[x].BeritaAcara = baseUrl + "/public/static/BeritaAcara/" + pelatihan[x].BeritaAcara
+	}
+
+	//Silabus Pelatihan
+	for y, _ := range pelatihan {
+		pelatihan[y].SilabusPelatihan = baseUrl + "/public/silabus/pelatihan/" + pelatihan[y].SilabusPelatihan
+	}
+	//Module Materi Pelatihan
+	for p, _ := range pelatihan {
+		pelatihan[p].ModuleMateri = baseUrl + "/public/module/pelatihan/" + pelatihan[p].SilabusPelatihan
+	}
+
 	return c.JSON(fiber.Map{
 		"Pesan": "Sukses Mengambil Data",
 		"data":  pelatihan,

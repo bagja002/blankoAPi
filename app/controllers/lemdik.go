@@ -104,7 +104,7 @@ func GetLemdik(c *fiber.Ctx) error {
 
 	tools.ValidationJwtLemdik(c, role, id_admin, names)
 
-	//Pemberian Akses Admin Pusat dan juga Admin lemdik
+	//Pemberian Akses 	Admin Pusat dan juga Admin lemdik
 	var lemdik entity.Lemdiklat
 	database.DB.Where("id_lemdik = ?", id_admin).Preload("Pelatihan").Find(&lemdik)
 

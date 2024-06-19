@@ -10,6 +10,7 @@ func CreateFolder() {
 		"public/silabus/pelatihan",
 		"public/silabus/sertifikasi",
 		"public/module/pelatihan",
+		"public/module/sertifikasi",
 
 		"public/static/sertifikasi",
 		"public/static/prasarana",
