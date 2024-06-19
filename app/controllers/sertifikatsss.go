@@ -197,3 +197,28 @@ func GenerateNoSertifikat(c *fiber.Ctx, admin uint) error {
 
 	// B. nomor/
 }
+
+func CekSertifikat(c *fiber.Ctx) error {
+
+	var users entity.UsersPelatihan
+	var data map[string]string
+
+	database.DB.Where("no_registrasi = ? ", data["no_registrasi"]).Find(&users)
+
+	if users.NoRegistrasi == "" {
+		return c.Status(400).JSON(fiber.Map{
+			"Pesan": "Nomor Registrasi Tidak Terdaftar, Silahkan Daftar Pelatihan",
+		})
+	}
+
+	if users.NoSertifikat == "" {
+		return c.Status(400).JSON(fiber.Map{
+			"Pesan": "Sertifikat Belum Dibuat",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"Pesan": "Berhasil Mendapatkan Data",
+		"data":  users,
+	})
+}

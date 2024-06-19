@@ -36,6 +36,7 @@ func SetupRoutesFiber(app *fiber.App) {
 	users.Post("/registerUser", controllers.CreateUser)
 	users.Post("/login", controllers.LoginUsers)
 	users.Get("/getUsersById", middleware.JwtProtect(), controllers.GetUserByID)
+	lemdik.Get("/getAllUsers", middleware.JwtProtect(), controllers.GetAllUsers)
 	users.Put("/updateUsers", middleware.JwtProtect(), controllers.UpdateUser)
 
 	users.Get("/test", controllers.TestPreloadPencapaian)
@@ -92,4 +93,7 @@ func SetupRoutesFiber(app *fiber.App) {
 	app.Get("/public/static/sertifikasi/:string", static.StaticSertifikasi)
 
 	app.Get("/public/static/sertifikasi/:string", static.StaticSertifikasi)
+
+	///Cek Sertifikat
+	app.Post("/cekSertifikat", controllers.CekSertifikat)
 }
