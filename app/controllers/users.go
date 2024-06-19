@@ -137,8 +137,9 @@ func GetUserByID(c *fiber.Ctx) error {
 	//KK
 	user.KK = baseUrl + "/public/static/profile/kk/" + user.KK
 	//Ijasah
-	user.Ijazah = baseUrl + "/public/static/profile/kk/" + user.KK
+	user.Ijazah = baseUrl + "/public/static/profile/ijazah/" + user.Ijazah
 	//Surat Kesehatan
+	user.SuratKesehatan = baseUrl + "/public/static/profile/suratSehat/" + user.SuratKesehatan
 
 	return c.JSON(user)
 }
