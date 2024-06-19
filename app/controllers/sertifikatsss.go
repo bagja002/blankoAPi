@@ -202,7 +202,11 @@ func CekSertifikat(c *fiber.Ctx) error {
 
 	var users entity.UsersPelatihan
 	var data map[string]string
-	fmt.Println(data["no_registrasi"])
+
+	if err := c.BodyParser(&data); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"Message": "Failed to parse request body", "Error": err.Error()})
+	}
+
 	database.DB.Where("no_registrasi = ? ", data["no_registrasi"]).Find(&users)
 
 	if users.NoRegistrasi == "" {
