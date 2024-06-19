@@ -87,7 +87,14 @@ func SetupRoutesFiber(app *fiber.App) {
 	app.Get("/public/static/BeritaAcara/:string", static.StaticBeritaAcara)
 	app.Get("/public/static/suratPemberitahuan/:string", static.StaticSuratPemberitahuan)
 	app.Get("/public/static/sarpras/:string", static.StaticSarpras)
+
+	//Get Users File File
+
 	app.Get("/public/static/profile/fotoProfile/:string", static.StaticFotoUsers)
+	app.Get("/public/static/profile/ijazah/:string", static.StaticIjazah)
+	app.Get("/public/static/profile/kk/:string", static.StaticKK)
+	app.Get("/public/static/profile/ktp/:string", static.StaticKtp)
+	app.Get("/public/static/profile/suratSehat/:string", static.StaticSuratSehat)
 	//Users Static area
 
 	app.Get("/public/static/sertifikasi/:string", static.StaticSertifikasi)
