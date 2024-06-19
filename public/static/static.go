@@ -41,6 +41,7 @@ func StaticSuratPemberitahuan(c *fiber.Ctx) error {
 
 //Foto, Ktp, KK, Ijzah, surat kesehatan
 
+// Ini Static Foto Users
 func StaticFotoUsers(c *fiber.Ctx) error {
 	params := c.Params("string")
 	return c.SendFile("public/static/profile/fotoProfile/" + params)
