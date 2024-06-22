@@ -121,3 +121,23 @@ func ValidationJwtSuperAdmin(c *fiber.Ctx, role string, id_admin int, names stri
 	// Jika semuanya valid, kembalikan nilai null (tidak ada pesan kesalahan)
 	return nil
 }
+
+func ValidationJwtExcam(c *fiber.Ctx, typess string, id_admin int, names string) *fiber.Map {
+	if typess != "PostTest" {
+		return &fiber.Map{
+			"pesan": "Bukan Ujian PostTest !!!",
+		}
+	}
+	if id_admin == 0 {
+		return &fiber.Map{
+			"pesan": "Admin tidak terdaftar",
+		}
+	}
+	if names == "" {
+		return &fiber.Map{
+			"pesan": "Tidak ada Nama di dalam Jwt",
+		}
+	}
+	// Jika semuanya valid, kembalikan nilai null (tidak ada pesan kesalahan)
+	return nil
+}

@@ -11,7 +11,7 @@ type Sarpras struct {
 	UpdateAt    string
 	FotoSarpras string
 
-	Sarprasatih []SarprasPelatihan `gorm:"foreignKey:IdSarpras"`
+	SarprasPelatihan []SarprasPelatihan `gorm:"foreignKey:IdSarpras"`
 }
 
 // Perlemdik
@@ -22,6 +22,7 @@ type SarprasPelatihan struct {
 	IdSarpras          uint
 	CreteAt            string
 	UpdateAt           string
+	//Sarpras            Sarpras `gorm:"foreignKey:IdSarprasPelatihan"`
 }
 
 // Table Prasarana User Pelatihan

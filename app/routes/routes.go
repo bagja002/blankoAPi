@@ -54,6 +54,13 @@ func SetupRoutesFiber(app *fiber.App) {
 	lemdik.Post("/createMateriPelatihan", middleware.JwtProtect(), controllers.CreateMateriPelatihan)
 	lemdik.Put("/updatePelatihan", middleware.JwtProtect(), controllers.UpdatePelatihan)
 	lemdik.Get("/getPelatihan", controllers.GetPelatihan)
+	//Soal Post Test dan Pretase
+	lemdik.Post("/ImportSoalPelatihan", middleware.JwtProtect(), controllers.ImportSoal)
+	lemdik.Get("/GetPertanyaanRandom", middleware.JwtProtect(), controllers.GetPertanyaanRandom)
+	lemdik.Post("/AddSoalUsers", middleware.JwtProtect(), controllers.AddSoalToUsers)
+	lemdik.Post("/AuthExam", controllers.AuthExam)
+	lemdik.Get("/getSoalUsers", middleware.JwtExamProtect(), controllers.GetSoalUsers)
+	lemdik.Post("/SumbitExam", middleware.JwtExamProtect(), controllers.Jawab)
 
 	lemdik.Post("/PublishSertifikat", middleware.JwtProtect(), controllers.PublishSertifikat)
 	lemdik.Post("/LastNomorSertifBalai", middleware.JwtProtect(), controllers.LastNomorSertifBalai)

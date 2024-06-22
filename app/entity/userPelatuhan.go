@@ -18,7 +18,6 @@ type UsersPelatihan struct {
 	PostTest           int
 	NilaiTeory         int
 	NilaiPraktek       int
-
 	//Nilai Materi
 	StatusPembayaran string //Pending dan Void
 	MetodoPembayaran string
@@ -28,6 +27,7 @@ type UsersPelatihan struct {
 	FileSertifikat   string
 	Institusi        string
 	TotalBayar       string
+	CodeAksess       string
 	CreteAt          string
 	UpdateAt         string
 	//Pelatihan        Pelatihan `gorm:"foreignKey:IdPelatihan"`
