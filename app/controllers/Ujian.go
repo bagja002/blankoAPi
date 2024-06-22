@@ -286,6 +286,7 @@ func AuthExam(c *fiber.Ctx) error {
 	}
 
 	codeAkses := data["code_akses"]
+	type_exam := data["type_exam"]
 	if codeAkses == "" {
 		return c.Status(400).JSON(fiber.Map{
 			"Pesan": "Mohon Maaf Masukan Kode Akses Anda",
@@ -300,8 +301,12 @@ func AuthExam(c *fiber.Ctx) error {
 		})
 	}
 
-	//Generate Token
-	t := tools.GenerateTokenExam(users)
+	t := ""
+	if type_exam == "PreTest" {
+		t = tools.GenerateTokenExam(users)
+	} else {
+		t = tools.GenerateTokenExamPostTest(users)
+	}
 
 	return c.JSON(fiber.Map{
 		"t": t,
@@ -405,8 +410,14 @@ func Jawab(c *fiber.Ctx) error {
 	var usersPelatihan entity.UsersPelatihan
 	database.DB.Where("id_user_pelatihan = ?", id_users_pelatihan).Find(&usersPelatihan)
 
-	//ubah nilainya
-	usersPelatihan.PreTest = int(finalScore)
+	//Ubah nilainya ter gantung dia pre test dan post test
+	if types == "PreTest" {
+		usersPelatihan.PreTest = int(finalScore)
+	}
+
+	if types == "PostTest" {
+		usersPelatihan.PostTest = int(finalScore)
+	}
 
 	database.DB.Model(&usersPelatihan).Updates(&usersPelatihan)
 
