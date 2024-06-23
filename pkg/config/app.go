@@ -7,22 +7,22 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/spf13/viper"
-	
 )
-//Kumpulan Konfigurasi Go Fiber
+
+// Kumpulan Konfigurasi Go Fiber
 func NewFiber(config *viper.Viper) *fiber.App {
 	var app = fiber.New(fiber.Config{
 		AppName:      config.GetString("app.name"),
 		ErrorHandler: NewErrorHandler(),
 		Prefork:      config.GetBool("web.prefork"),
+		BodyLimit:    20 * 1024 * 1024,
+		Concurrency:  512 * 1024,
 	})
 
 	app.Use(
 		cors.New(),
 		logger.New(),
 	)
-
-	
 
 	return app
 }
