@@ -15,8 +15,8 @@
       "port": 3306,
       "name": "kkp-elaut",
       "pool": {
-        "idle": 100,
-        "max": 2000,
+        "idle": 10,
+        "max": 1000,
         "lifetime": 300
       }
     },
