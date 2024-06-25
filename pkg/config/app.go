@@ -16,7 +16,7 @@ func NewFiber(config *viper.Viper) *fiber.App {
 		ErrorHandler: NewErrorHandler(),
 		Prefork:      config.GetBool("web.prefork"),
 		BodyLimit:    20 * 1024 * 1024,
-		Concurrency:  512 * 1024,
+		Concurrency:  1024 * 1024,
 	})
 
 	app.Use(

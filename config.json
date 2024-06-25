@@ -5,7 +5,7 @@
     "web": {
       "baseUrl":"https://api-elaut.ikulatluh.cloud",
       "baseUrls":"http://127.0.0.1:8000",
-      "prefork": false,
+      "prefork": true,
       "port": ":8000"
     },
     "database": {
@@ -15,8 +15,8 @@
       "port": 3306,
       "name": "kkp-elaut",
       "pool": {
-        "idle": 10,
-        "max": 100,
+        "idle": 100,
+        "max": 2000,
         "lifetime": 300
       }
     },
