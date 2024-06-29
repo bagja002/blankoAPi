@@ -20,61 +20,6 @@ func GenerateLembagaDiklat() {
 
 }
 
-func GenerateJenis() {
-	data := []entity.JenisBidangKompotensi{
-		{KodeKompotensi: "HACCP", NamaKompotensi: "HACCP", CreateAt: tools.TimeNowJakarta()},
-		{KodeKompotensi: "CBIB", NamaKompotensi: "CBIB", CreateAt: tools.TimeNowJakarta()},
-		{KodeKompotensi: "CPPIB", NamaKompotensi: "CPPIB", CreateAt: tools.TimeNowJakarta()},
-		{KodeKompotensi: "CPIB", NamaKompotensi: "CPIB", CreateAt: tools.TimeNowJakarta()},
-		{KodeKompotensi: "SPI", NamaKompotensi: "SPI", CreateAt: tools.TimeNowJakarta()},
-		{KodeKompotensi: "API", NamaKompotensi: "API", CreateAt: tools.TimeNowJakarta()},
-		{KodeKompotensi: "MPM", NamaKompotensi: "MPM", CreateAt: tools.TimeNowJakarta()},
-	}
-
-	data2 := []entity.JenisBidangPelatihan{
-		{KodeBidang: "HACCP", NamaBidang: "HACCP", CreateAt: tools.TimeNowJakarta()},
-		{KodeBidang: "CBIB", NamaBidang: "CBIB", CreateAt: tools.TimeNowJakarta()},
-		{KodeBidang: "CPPIB", NamaBidang: "CPPIB", CreateAt: tools.TimeNowJakarta()},
-		{KodeBidang: "CPIB", NamaBidang: "CPIB", CreateAt: tools.TimeNowJakarta()},
-		{KodeBidang: "SPI", NamaBidang: "SPI", CreateAt: tools.TimeNowJakarta()},
-		{KodeBidang: "API", NamaBidang: "API", CreateAt: tools.TimeNowJakarta()},
-		{KodeBidang: "MPM", NamaBidang: "MPM", CreateAt: tools.TimeNowJakarta()},
-	}
-
-	for _, d := range data {
-		// Cek apakah data sudah ada di database
-		var count int64
-		if err := DB.Model(&entity.JenisBidangKompotensi{}).Where("kode_kompotensi = ?", d.KodeKompotensi).Count(&count).Error; err != nil {
-			fmt.Println("Error occurred while checking existing data:", err)
-			return
-		}
-
-		// Jika data belum ada, tambahkan ke database
-		if count == 0 {
-			if err := DB.Create(&d).Error; err != nil {
-				fmt.Println("Error occurred while adding data to database:", err)
-				return
-			}
-		}
-	}
-	for _, d := range data2 {
-		// Cek apakah data sudah ada di database
-		var count int64
-		if err := DB.Model(&entity.JenisBidangKompotensi{}).Where("kode_kompotensi = ?", d.KodeBidang).Count(&count).Error; err != nil {
-			fmt.Println("Error occurred while checking existing data:", err)
-			return
-		}
-
-		// Jika data belum ada, tambahkan ke database
-		if count == 0 {
-			if err := DB.Create(&d).Error; err != nil {
-				fmt.Println("Error occurred while adding data to database:", err)
-				return
-			}
-		}
-	}
-}
-
 func Connect() {
 
 	viper := config.NewViper()
@@ -106,26 +51,10 @@ func Connect() {
 	connection.SetConnMaxLifetime(time.Second * time.Duration(maxLifeTimeConnection))
 
 	err = db.AutoMigrate(
-		&entity.Users{},
-		&entity.AdminPusat{},
-		&entity.Lemdiklat{},
-		&entity.SuperAdmin{},
-		&entity.Pelatihan{},
-		&entity.MateriPelatihan{},
-		&entity.Sarpras{},
-		&entity.SarprasPelatihan{},
-		&entity.UsersPelatihan{},
-		&entity.MateriPelatihan{},
-
-		&entity.JenisBidangKompotensi{},
-		&entity.JenisBidangPelatihan{},
-
-		&entity.NoSertfikat{},
-		&entity.Sertifikat{},
-
-		&entity.SoalUjianLemdik{},
-		&entity.Jawaban{},
-		&entity.UsersSoal{},
+		&entity.Admin{},
+		&entity.Blanko{},
+		&entity.BlankoKeluar{},
+		&entity.BlankoRusak{},
 	)
 	if err != nil {
 		log.Fatalf("failed to auto-migrate: %v", err)
@@ -154,5 +83,4 @@ func Connect() {
 	}
 	DB = db
 
-	GenerateJenis()
 }

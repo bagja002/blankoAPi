@@ -1,15 +1,9 @@
 package tools
 
 import (
-	//"fmt"
-
-	"template/app/entity"
-	//"template/app/models"
-
-	//"errors"
-	"time"
-
 	"github.com/golang-jwt/jwt/v4"
+	"template/app/entity"
+	"time"
 )
 
 //Model Role model yang harus di tambahkan
@@ -19,27 +13,16 @@ func GenerateToken(entitys interface{}) string {
 	var idAdmin float64 // Mengubah tipe data menjadi string
 
 	switch e := entitys.(type) {
-	case entity.Users:
+	case entity.Admin:
 		name = e.Nama
-		idAdmin = float64((int(e.IdUsers))) // Contoh penggunaan ID, sesuaikan dengan kebutuhan Anda
-		role = "5"
-		types = "Peserta"
-	case entity.AdminPusat:
-		name = e.Nama
-		idAdmin = float64((int(e.IdAdminPusat))) // Contoh penggunaan ID, sesuaikan dengan kebutuhan Anda
+		idAdmin = float64((int(e.IdAdmin))) // Contoh penggunaan ID, sesuaikan dengan kebutuhan Anda
 		role = "1"
-		types = "Peserta"
+		types = "Admin Pusat"
 	case entity.SuperAdmin:
 		name = e.Nama
 		idAdmin = float64((int(e.IdSuperAdmin))) // Konversi ID ke string
 		role = "99"
 		types = "SuperAdmin"
-
-	case entity.Lemdiklat:
-		name = e.NamaLemdik
-		idAdmin = float64(int(e.IdLemdik))
-		role = IntToString(roleLemdiklat)
-		types = "Lemdiklat"
 	default:
 		return ""
 	}

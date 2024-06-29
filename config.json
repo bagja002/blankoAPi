@@ -3,7 +3,7 @@
       "name": "Marline Engine"
     },
     "web": {
-      "baseUrl":"https://api-elaut.ikulatluh.cloud",
+      "baseUrl":"https://blanko.ikul",
       "baseUrls":"http://127.0.0.1:8000",
       "prefork": true,
       "port": ":8000"
@@ -13,7 +13,7 @@
       "password": "@Puslat123",
       "host": "localhost",
       "port": 3306,
-      "name": "kkp-elaut",
+      "name": "kkp-blanko",
       "pool": {
         "idle": 10,
         "max": 1000,

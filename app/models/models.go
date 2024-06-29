@@ -38,6 +38,57 @@ type AdminPusat struct {
 	Status       string
 }
 
+type Ujikom struct {
+	IdUjikom                 uint `gorm:"primary_key;auto_increment"`
+	IdLemdik                 uint
+	KodeUjikom               string
+	NamaUjikom               string `json:"NamUjikom"` //JudulUjikom
+	PenyelenggaraUjikom      string //Penyengeggara oelatihan
+	DetaiUjikom              string //DeskripsiUjikom
+	FotUjikom                string
+	JeniUjikom               string //Aspirasi, PNBP, Reguler
+	BidanUjikom              string //BidangUjikom
+	DukunganProgramTerobosan string //PIT, Non terobosan
+	TanggalMulaUjikom        string
+	TanggalBerakhiUjikom     string
+	HargUjikom               int //HargaUjikom
+	Instruktur               string
+	Status                   string //Aktif Atau Tidak
+	MemoPusat                string //memo persetujuan ya g dikeluarkan oleh bu kapus melalui persuratan
+	SilabuUjikom             string //DsilabusUjikom dalam Bentuk File
+	LokasUjikom              string //LokasiUjikom
+	PelaksanaaUjikom         string //PelaksanaUjikom
+	UjiKompotensi            string //True Or False
+	KoutUjikom               string
+	AsaUjikom                string //MasyarakatUjikom
+
+	//yang dikatergorikan file adalah
+
+	//SECTION SERTIFIKAT
+	AsalSertifikat  string //JDPT/BPSDM
+	JenisSertifikat string //teknis, kepelautan , umum
+	TtdSertifikat   string //Pilih Penandatangan
+	NoSertifikat    string //Nomor Sertifikat PeUjikom
+
+	//Status Aproval
+	StatusApproval string
+	//File
+
+	//Penambahan Paket Penginapan
+	IdSaranaPrasarana string
+	IdKonsumsi        string
+	ModuleMateri      string //file
+	CreateAt          string
+	UpdateAt          string
+
+	PemberitahuanDiterima       string
+	SuratPemberitahuan          string //pdf
+	CatatanPemberitahuanByPusat string
+	DeskripsiSertifikat         string
+
+	PenerbitanSertifikatDiterima, BeritaAcara, CatatanPenerbitanByPusat string
+}
+
 type Pelatihan struct {
 	IdPelatihan              uint   `gorm:"primary_key;auto_increment" json:"id_pelatihan"`
 	IdLemdik                 string `json:"IdLemdik"`
