@@ -115,6 +115,7 @@ func Connect() {
 		&entity.Sarpras{},
 		&entity.SarprasPelatihan{},
 		&entity.UsersPelatihan{},
+		&entity.MateriPelatihan{},
 
 		&entity.JenisBidangKompotensi{},
 		&entity.JenisBidangPelatihan{},

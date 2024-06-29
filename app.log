@@ -1,1 +1,2 @@
 2024/06/03 21:06:53 failed to listen: listen tcp4 :8000: bind: address already in use
+2024/06/29 10:11:54 Error parsing request body: failed to decode: schema: interface must be a pointer to struct
