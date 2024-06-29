@@ -75,6 +75,100 @@ func CreateUserPelatihan(c *fiber.Ctx) error {
 	})
 }
 
+func UpdateUsersPelatihanUsers(c *fiber.Ctx) error {
+
+	id_admin, _ := c.Locals("id_admin").(int)
+	role, _ := c.Locals("role").(string)
+	names, _ := c.Locals("name").(string)
+
+	tools.ValidationJwtUsers(c, role, id_admin, names)
+
+	//INI CARANYA BAGAIMANA
+	id := c.Query("id")
+	FileSertifikat, _ := c.FormFile("FileSertifikat")
+
+	var usersPelatihan entity.UsersPelatihan
+
+	database.DB.Where("id_user_pelatihan = ?", id).Find(&usersPelatihan)
+
+	// Menginisialisasi koneksi database
+	tx := database.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if FileSertifikat != nil {
+		if FileSertifikat != nil {
+			usersPelatihan.FileSertifikat = FileSertifikat.Filename
+			if err := c.SaveFile(FileSertifikat, "public/static/fileSertifikat/"+FileSertifikat.Filename); err != nil {
+				tx.Rollback()
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"pesan": "Gagal menyimpan file EvaluasiRenaksi",
+					"error": err.Error(),
+				})
+			}
+		}
+
+		if err := tx.Model(&usersPelatihan).Where("id_user_pelatihan = ?", id).Updates(&usersPelatihan).Error; err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"pesan": "Gagal memperbarui MonitoringEvaluasi",
+				"error": err.Error(),
+			})
+		}
+
+	}
+
+	//data biasa
+	fmt.Println(usersPelatihan)
+	var request entity.UsersPelatihan
+
+	if err := c.BodyParser(&request); err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"pesan": "gagal reques",
+		})
+	}
+
+	updates := entity.UsersPelatihan{
+		NoSertifikat: request.NoSertifikat,
+		NoRegistrasi: request.NoRegistrasi,
+		PreTest:      request.PreTest,
+		PostTest:     request.PostTest,
+		NilaiTeory:   request.NilaiTeory,
+		NilaiPraktek: request.NilaiPraktek,
+
+		//Nilai Materi
+		StatusPembayaran: request.StatusPembayaran, //Pending dan Void
+		MetodoPembayaran: request.MetodoPembayaran,
+		WaktuPembayaran:  request.WaktuPembayaran,
+		Keterangan:       request.Keterangan,
+
+		UpdateAt: tools.TimeNowJakarta(),
+	}
+
+	if err := tx.Model(&usersPelatihan).Where("id_user_pelatihan = ?", id).Updates(&updates).Error; err != nil {
+		tx.Rollback()
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"pesan": "Gagal memperbarui MonitoringEvaluasi",
+			"error": err.Error(),
+		})
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"pesan": "Gagal melakukan commit transaksi",
+			"error": err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"Pesan": "Berhasil Update Pelatihan ",
+		"data":  usersPelatihan,
+	})
+}
+
 func UpdateUsersPelatihan(c *fiber.Ctx) error {
 
 	id_admin, _ := c.Locals("id_admin").(int)
