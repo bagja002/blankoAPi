@@ -6,7 +6,7 @@
       "baseUrl":"https://blanko.ikul",
       "baseUrls":"http://127.0.0.1:7000",
       "prefork": true,
-      "port": ":8000"
+      "port": ":6000"
     },
     "database": {
       "username": "Puslat",
