@@ -51,6 +51,7 @@ func Connect() {
 	connection.SetConnMaxLifetime(time.Second * time.Duration(maxLifeTimeConnection))
 
 	err = db.AutoMigrate(
+		&entity.SuperAdmin{},
 		&entity.Admin{}, &entity.Blanko{}, &entity.BlankoKeluar{},
 		&entity.BlankoRusak{},
 	)
