@@ -55,7 +55,6 @@ type BlankoKeluar struct {
 	CreatedAt             string
 	UpdatedAt             string
 	Keterangan            string
-	Blanko                []Blanko `gorm:"foreignKey:IDBlanko"`
 }
 
 type BlankoRusak struct {
@@ -65,5 +64,4 @@ type BlankoRusak struct {
 	Tipe          string // rusak atau hilang
 	Keterangan    string
 	TanggalRusak  string
-	Blanko        []Blanko `gorm:"foreignKey:IDBlanko"`
 }
