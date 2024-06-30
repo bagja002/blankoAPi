@@ -11,6 +11,10 @@ func SetupRoutesFiber(app *fiber.App) {
 
 	//superAdmin := app.Group("/superAdmin")
 
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Backend Blanko")
+	})
+
 	adminPusat := app.Group("/adminPusat")
 
 	//CRUD Blanko
