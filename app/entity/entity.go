@@ -28,8 +28,6 @@ type Blanko struct {
 	JumlahPengadaan  int
 	CreateAt         string
 	UpdateAt         string
-	BlankoKeluars    []BlankoKeluar `gorm:"foreignKey:IDBlanko"`
-	BlankoRusaks     []BlankoRusak  `gorm:"foreignKey:IDBlanko"`
 }
 
 type BlankoKeluar struct {
