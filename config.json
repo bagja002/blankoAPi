@@ -1,10 +1,10 @@
 {
     "app": {
-      "name": "Marline Engine"
+      "name": "Blanko Engine"
     },
     "web": {
       "baseUrl":"https://blanko.ikul",
-      "baseUrls":"http://127.0.0.1:8000",
+      "baseUrls":"http://127.0.0.1:7000",
       "prefork": true,
       "port": ":8000"
     },
