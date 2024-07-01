@@ -36,11 +36,11 @@ func CreateBlankoRusak(c *fiber.Ctx) error {
 
 	// Create a new BlankoRusak record
 	dataBlankoRusak := entity.BlankoRusak{
-		IdBlankoRusak: request.IdBlankoKeluar,
-		NoSeri:        request.NoSeri,
-		Tipe:          request.Tipe,
-		Keterangan:    request.Keterangan,
-		TanggalRusak:  tools.TimeNowJakarta(),
+		IdBlankoKeluar: request.IdBlankoKeluar,
+		NoSeri:         request.NoSeri,
+		Tipe:           request.Tipe,
+		Keterangan:     request.Keterangan,
+		TanggalRusak:   tools.TimeNowJakarta(),
 	}
 
 	if result := database.DB.Create(&dataBlankoRusak); result.Error != nil {
@@ -53,7 +53,7 @@ func CreateBlankoRusak(c *fiber.Ctx) error {
 
 // GetBlankoRusak handles fetching of BlankoRusak records
 func GetBlankoRusak(c *fiber.Ctx) error {
-	id := c.Query("id_blanko_rusak")
+	id := c.Query("id_blanko_keluar")
 	CoC := c.Query("tipe_blanko")
 	var blankoRusak []entity.BlankoRusak
 	query := database.DB
