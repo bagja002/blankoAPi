@@ -17,6 +17,9 @@ func SetupRoutesFiber(app *fiber.App) {
 
 	adminPusat := app.Group("/adminPusat")
 
+	adminPusat.Post("/login", controllers.Login)
+	adminPusat.Post("/register", controllers.Register)
+
 	//CRUD Blanko
 	adminPusat.Post("/addBlanko", middleware.JwtProtect(), controllers.CreteDataBlanko)
 	adminPusat.Get("/getBlanko", controllers.GetBlanko)

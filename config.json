@@ -4,7 +4,7 @@
     },
     "web": {
       "baseUrl":"https://blanko.ikul",
-      "baseUrls":"http://127.0.0.1:7000",
+      "baseUrls":"http://127.0.0.1:6000",
       "prefork": true,
       "port": ":6000"
     },
