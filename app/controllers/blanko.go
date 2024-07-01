@@ -67,7 +67,13 @@ func GetBlanko(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to fetch Blanko records", "Error": result.Error.Error()})
 	}
 
-	return c.JSON(fiber.Map{"Pesan": "Data Blanko Berhasil Didapatkan", "data": blanko})
+	total := 0
+
+	for _, x := range blanko {
+		total += x.Jumlah
+	}
+
+	return c.JSON(fiber.Map{"Pesan": "Data Blanko Berhasil Didapatkan", "data": blanko, "total": total})
 }
 
 // UpdateBlanko handles updating an existing Blanko record
