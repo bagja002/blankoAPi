@@ -81,11 +81,16 @@ func CreateBlankoKeluar(c *fiber.Ctx) error {
 func GetBlankoKeluar(c *fiber.Ctx) error {
 	id := c.Query("id_blanko_keluar")
 
+	CoC := c.Query("tipe_blanko")
+
 	var blankoKeluar []entity.BlankoKeluar
 	query := database.DB
 
 	if id != "" {
 		query = query.Where("id_blanko_keluar = ?", id)
+	}
+	if CoC != "" {
+		query = query.Where("tipe_blanko = ? ", CoC)
 	}
 
 	if result := query.Find(&blankoKeluar); result.Error != nil {
