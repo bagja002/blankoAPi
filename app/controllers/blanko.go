@@ -29,18 +29,18 @@ func CreteDataBlanko(c *fiber.Ctx) error {
 	tools.ValidationJwtLemdik(c, role, idAdmin, name)
 
 	// Parse the request body
-	var request entity.Blanko
-	if err := c.BodyParser(&request); err != nil {
+	var data map[string]string
+	if err := c.BodyParser(&data); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"Message": "Failed to parse request body", "Error": err.Error()})
 	}
 
 	// Create a new Blanko record
 	dataBlanko := entity.Blanko{
-		Jumlah:           request.Jumlah,
-		NoSeri:           request.NoSeri,
-		TipeBlanko:       request.TipeBlanko,
-		TanggalPengadaan: request.TanggalPengadaan,
-		JumlahPengadaan:  request.JumlahPengadaan,
+		Jumlah:           tools.StringToInt(data["jumlah"]),
+		NoSeri:           data["no_seri"],
+		TipeBlanko:       data["tipe_blanko"],
+		TanggalPengadaan: data["tanggal_pengadaan"],
+		JumlahPengadaan:  tools.StringToInt(data["jumlah_pengadaan"]),
 		CreateAt:         tools.TimeNowJakarta(),
 	}
 	if result := database.DB.Create(&dataBlanko); result.Error != nil {
