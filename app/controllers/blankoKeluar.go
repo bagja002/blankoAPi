@@ -38,7 +38,7 @@ func CreateBlankoKeluar(c *fiber.Ctx) error {
 	dataBlankoKeluar := entity.BlankoKeluar{
 		IdBlanko:              request.IdBlanko,
 		TipeBlanko:            request.TipeBlanko,
-		TanggalKeluar:         request.TanggalKeluar,
+		TanggalKeluar:         tools.TimeNowJakarta(),
 		NamaLemdiklat:         request.NamaLemdiklat,
 		NamaPelaksana:         request.NamaPelaksana,
 		TanggalPermohonan:     request.TanggalPermohonan,
@@ -57,9 +57,17 @@ func CreateBlankoKeluar(c *fiber.Ctx) error {
 		PetugasYangMemberi:    request.PetugasYangMemberi,
 		LinkDataDukung:        request.LinkDataDukung,
 		CreatedAt:             tools.TimeNowJakarta(),
-		UpdatedAt:             tools.TimeNowJakarta(),
 		Keterangan:            request.Keterangan,
 	}
+
+	//Ambil ID Blanko
+	var blanko entity.Blanko
+
+	database.DB.Where("id_blanko = ?", dataBlankoKeluar.IdBlanko).Find(&blanko)
+
+	blanko.Jumlah = blanko.Jumlah - dataBlankoKeluar.JumlahBlankoDisetujui
+
+	database.DB.Model(&blanko).Updates(&blanko)
 
 	if result := database.DB.Create(&dataBlankoKeluar); result.Error != nil {
 		log.Printf("Failed to create BlankoKeluar record: %v", result.Error)
