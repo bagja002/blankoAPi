@@ -21,7 +21,7 @@ func Login(c *fiber.Ctx) error {
 
 	var users entity.Admin
 
-	database.DB.Where("email = ? ", data["email"]).First(&users)
+	database.DB.Where("username = ? ", data["username"]).First(&users)
 	if users.IdAdmin == 0 {
 		c.Status(fiber.StatusUnauthorized)
 		return c.JSON(fiber.Map{
