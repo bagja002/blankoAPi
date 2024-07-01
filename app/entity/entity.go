@@ -58,10 +58,10 @@ type BlankoKeluar struct {
 }
 
 type BlankoRusak struct {
-	IdBlankoRusak int `gorm:"primary_key;auto_increment"`
-	IDBlanko      int // Relasi ke `blanko`
-	NoSeri        string
-	Tipe          string // rusak atau hilang
-	Keterangan    string
-	TanggalRusak  string
+	IdBlankoRusak  int `gorm:"primary_key;auto_increment"`
+	IdBlankoKeluar int // Relasi ke `blanko`
+	NoSeri         string
+	Tipe           string // rusak atau hilang
+	Keterangan     string
+	TanggalRusak   string
 }

@@ -36,11 +36,11 @@ func CreateBlankoRusak(c *fiber.Ctx) error {
 
 	// Create a new BlankoRusak record
 	dataBlankoRusak := entity.BlankoRusak{
-		IDBlanko:     request.IDBlanko,
-		NoSeri:       request.NoSeri,
-		Tipe:         request.Tipe,
-		Keterangan:   request.Keterangan,
-		TanggalRusak: request.TanggalRusak,
+		IdBlankoRusak: request.IdBlankoKeluar,
+		NoSeri:        request.NoSeri,
+		Tipe:          request.Tipe,
+		Keterangan:    request.Keterangan,
+		TanggalRusak:  tools.TimeNowJakarta(),
 	}
 
 	if result := database.DB.Create(&dataBlankoRusak); result.Error != nil {
@@ -54,12 +54,16 @@ func CreateBlankoRusak(c *fiber.Ctx) error {
 // GetBlankoRusak handles fetching of BlankoRusak records
 func GetBlankoRusak(c *fiber.Ctx) error {
 	id := c.Query("id_blanko_rusak")
-
+	CoC := c.Query("tipe_blanko")
 	var blankoRusak []entity.BlankoRusak
 	query := database.DB
 
 	if id != "" {
 		query = query.Where("id_blanko_rusak = ?", id)
+	}
+
+	if CoC != "" {
+		query = query.Where("tipe_blanko = ? ", CoC)
 	}
 
 	if result := query.Find(&blankoRusak); result.Error != nil {
@@ -106,11 +110,11 @@ func UpdateBlankoRusak(c *fiber.Ctx) error {
 
 	// Update the BlankoRusak record
 	updates := entity.BlankoRusak{
-		IDBlanko:     request.IDBlanko,
-		NoSeri:       request.NoSeri,
-		Tipe:         request.Tipe,
-		Keterangan:   request.Keterangan,
-		TanggalRusak: request.TanggalRusak,
+		IdBlankoKeluar: request.IdBlankoRusak,
+		NoSeri:         request.NoSeri,
+		Tipe:           request.Tipe,
+		Keterangan:     request.Keterangan,
+		TanggalRusak:   request.TanggalRusak,
 	}
 
 	if result := database.DB.Model(&blankoRusak).Updates(&updates); result.Error != nil {
