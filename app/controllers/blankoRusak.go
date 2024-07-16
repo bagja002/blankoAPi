@@ -43,6 +43,14 @@ func CreateBlankoRusak(c *fiber.Ctx) error {
 		TanggalRusak:   tools.TimeNowJakarta(),
 	}
 
+	var data entity.BlankoKeluar
+
+	database.DB.Where("id_blanko_keluar = ? ", dataBlankoRusak.IdBlankoKeluar).Find(&data)
+
+	data.JumlahBlankoDisetujui = data.JumlahBlankoDisetujui - 1
+
+	database.DB.Model(&data).Updates(&data)
+
 	if result := database.DB.Create(&dataBlankoRusak); result.Error != nil {
 		log.Printf("Failed to create BlankoRusak record: %v", result.Error)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to create BlankoRusak record", "Error": result.Error.Error()})
