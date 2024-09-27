@@ -14,9 +14,9 @@ import (
 	//"github.com/gofiber/fiber/v2"
 )
 
+//Terbaru unuuu
 
-
-func main(){
+func main() {
 	tools.CreateFolder()
 	viperConfig := config.NewViper()
 
@@ -25,13 +25,11 @@ func main(){
 		log.Fatal("Gagal membuka file log:", err)
 	}
 	defer file.Close()
-	
+
 	database.Connect()
 
 	// Set output log ke file yang telah dibuka
 	log.SetOutput(file)
-	
-	
 
 	app := config.NewFiber(viperConfig)
 
