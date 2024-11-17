@@ -64,4 +64,7 @@ type BlankoRusak struct {
 	Tipe           string // rusak atau hilang
 	Keterangan     string
 	TanggalRusak   string
+	FotoDokumen    string
+	CreatedAt      string
+	UpdateAt       string
 }

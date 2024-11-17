@@ -1,0 +1,6 @@
+# Ignore public folder
+
+/public
+
+# Ignore config.json file
+/config.json

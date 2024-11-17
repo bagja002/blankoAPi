@@ -7,25 +7,8 @@ import (
 
 func CreateFolder() {
 	folders := []string{
-		"public/silabus/pelatihan",
-		"public/silabus/sertifikasi",
-		"public/module/pelatihan",
-		"public/module/sertifikasi",
 
-		"public/static/sertifikasi",
-		"public/static/prasarana",
-		"public/static/pelatihan",
-		"public/static/profile/fotoProfile",
-		"public/static/profile/ijazah",
-		"public/static/profile/kk",
-		"public/static/profile/ktp",
-		"public/static/profile/suratSehat",
-
-		"public/static/suratPemberitahuan",
-		"public/static/BeritaAcara",
-		"public/static/fileSertifikat",
-
-		"public/static/memo",
+		"public/static/foto-blanko-rusak",
 
 		//Folder Untuk Foto Sarpras
 

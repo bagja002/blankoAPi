@@ -34,6 +34,17 @@ func CreateBlankoRusak(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"Message": "Failed to parse request body", "Error": err.Error()})
 	}
 
+	foto, err := c.FormFile("foto_blanko")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "File tidak ditemukan"})
+	}
+
+	if foto != nil {
+		if err := c.SaveFile(foto, "public/foto-blanko-rusak/"+tools.RemoverSpaci(foto.Filename)); err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save foto", "Error": err.Error()})
+		}
+	}
+
 	// Create a new BlankoRusak record
 	dataBlankoRusak := entity.BlankoRusak{
 		IdBlankoKeluar: request.IdBlankoKeluar,
@@ -41,6 +52,8 @@ func CreateBlankoRusak(c *fiber.Ctx) error {
 		Tipe:           request.Tipe,
 		Keterangan:     request.Keterangan,
 		TanggalRusak:   tools.TimeNowJakarta(),
+		CreatedAt:      tools.TimeNowJakarta(),
+		FotoDokumen:    tools.RemoverSpaci(foto.Filename),
 	}
 
 	var data entity.BlankoKeluar
