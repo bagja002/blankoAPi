@@ -3,6 +3,7 @@ package controllers
 import (
 	"log"
 	"template/app/entity"
+	"template/pkg/config"
 	"template/pkg/database"
 	"template/pkg/tools"
 
@@ -74,6 +75,9 @@ func CreateBlankoRusak(c *fiber.Ctx) error {
 
 // GetBlankoRusak handles fetching of BlankoRusak records
 func GetBlankoRusak(c *fiber.Ctx) error {
+
+	viper := config.NewViper()
+	baseUrl := viper.GetString("web.base_urls")
 	id := c.Query("id_blanko_keluar")
 	CoC := c.Query("tipe_blanko")
 	var blankoRusak []entity.BlankoRusak
@@ -90,6 +94,10 @@ func GetBlankoRusak(c *fiber.Ctx) error {
 	if result := query.Find(&blankoRusak); result.Error != nil {
 		log.Printf("Failed to fetch BlankoRusak records: %v", result.Error)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to fetch BlankoRusak records", "Error": result.Error.Error()})
+	}
+
+	for _, record := range blankoRusak {
+		record.FotoDokumen = baseUrl + "/public/foto-blanko-rusak/" + record.FotoDokumen
 	}
 
 	return c.JSON(fiber.Map{"Pesan": "Data Blanko Rusak Berhasil Didapatkan", "data": blankoRusak})
