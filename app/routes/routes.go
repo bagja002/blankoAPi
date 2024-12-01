@@ -3,6 +3,7 @@ package routes
 import (
 	"template/app/controllers"
 	"template/pkg/middleware"
+	"template/pkg/static"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -38,5 +39,7 @@ func SetupRoutesFiber(app *fiber.App) {
 	adminPusat.Get("/getBlankoRusak", controllers.GetBlankoRusak)
 	adminPusat.Put("/updateBlankoRusak", middleware.JwtProtect(), controllers.UpdateBlankoRusak)
 	adminPusat.Delete("/deleteBlankoRusak", middleware.JwtProtect(), controllers.DeleteBlankoRusak)
+
+	app.Get("/public/static/foto-blanko-rusak/:string", static.StaticBelankoRusak)
 
 }
