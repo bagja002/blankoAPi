@@ -55,6 +55,7 @@ type BlankoKeluar struct {
 	CreatedAt             string
 	UpdatedAt             string
 	Keterangan            string
+	AsalPendapatan        string
 }
 
 type BlankoRusak struct {

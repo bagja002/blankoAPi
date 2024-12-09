@@ -83,6 +83,8 @@ func GetBlankoKeluar(c *fiber.Ctx) error {
 
 	CoC := c.Query("tipe_blanko")
 
+	asalPendapatan := c.Query("asal_pendapatan")
+
 	var blankoKeluar []entity.BlankoKeluar
 	query := database.DB
 
@@ -91,6 +93,10 @@ func GetBlankoKeluar(c *fiber.Ctx) error {
 	}
 	if CoC != "" {
 		query = query.Where("tipe_blanko = ? ", CoC)
+	}
+
+	if asalPendapatan != "" {
+		query = query.Where("asal_pendapatan =?", asalPendapatan)
 	}
 
 	if result := query.Find(&blankoKeluar); result.Error != nil {
