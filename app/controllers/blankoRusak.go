@@ -41,7 +41,7 @@ func CreateBlankoRusak(c *fiber.Ctx) error {
 	}
 
 	if foto != nil {
-		if err := c.SaveFile(foto, "public/foto-blanko-rusak/"+tools.RemoverSpaci(foto.Filename)); err != nil {
+		if err := c.SaveFile(foto, "public/static/foto-blanko-rusak/"+tools.RemoverSpaci(foto.Filename)); err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to save foto", "Error": err.Error()})
 		}
 	}
@@ -56,14 +56,6 @@ func CreateBlankoRusak(c *fiber.Ctx) error {
 		CreatedAt:      tools.TimeNowJakarta(),
 		FotoDokumen:    tools.RemoverSpaci(foto.Filename),
 	}
-
-	var data entity.BlankoKeluar
-
-	database.DB.Where("id_blanko_keluar = ? ", dataBlankoRusak.IdBlankoKeluar).Find(&data)
-
-	data.JumlahBlankoDisetujui = data.JumlahBlankoDisetujui - 1
-
-	database.DB.Model(&data).Updates(&data)
 
 	if result := database.DB.Create(&dataBlankoRusak); result.Error != nil {
 		log.Printf("Failed to create BlankoRusak record: %v", result.Error)
@@ -97,7 +89,7 @@ func GetBlankoRusak(c *fiber.Ctx) error {
 	}
 
 	for _, record := range blankoRusak {
-		record.FotoDokumen = baseUrl + "/public/foto-blanko-rusak/" + record.FotoDokumen
+		record.FotoDokumen = baseUrl + "/public/static/foto-blanko-rusak/" + record.FotoDokumen
 	}
 
 	return c.JSON(fiber.Map{"Pesan": "Data Blanko Rusak Berhasil Didapatkan", "data": blankoRusak})
