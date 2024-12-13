@@ -69,7 +69,7 @@ func CreateBlankoRusak(c *fiber.Ctx) error {
 func GetBlankoRusak(c *fiber.Ctx) error {
 
 	viper := config.NewViper()
-	baseUrl := viper.GetString("web.base_urls")
+	baseUrl := viper.GetString("web.base_url")
 	id := c.Query("id_blanko_keluar")
 	CoC := c.Query("tipe_blanko")
 	var blankoRusak []entity.BlankoRusak
