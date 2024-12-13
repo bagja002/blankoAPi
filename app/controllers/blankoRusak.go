@@ -88,8 +88,8 @@ func GetBlankoRusak(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"Message": "Failed to fetch BlankoRusak records", "Error": result.Error.Error()})
 	}
 
-	for _, record := range blankoRusak {
-		record.FotoDokumen = baseUrl + "/public/static/foto-blanko-rusak/" + record.FotoDokumen
+	for i, _ := range blankoRusak {
+		blankoRusak[i].FotoDokumen = baseUrl + "/public/static/foto-blanko-rusak/" + blankoRusak[i].FotoDokumen
 	}
 
 	return c.JSON(fiber.Map{"Pesan": "Data Blanko Rusak Berhasil Didapatkan", "data": blankoRusak})
