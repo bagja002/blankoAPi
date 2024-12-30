@@ -56,6 +56,8 @@ type BlankoKeluar struct {
 	UpdatedAt             string
 	Keterangan            string
 	SasaranMasyarakat     string
+	Latitude              string
+	Longitude             string
 	AsalPendapatan        string
 }
 

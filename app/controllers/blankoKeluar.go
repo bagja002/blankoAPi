@@ -59,6 +59,8 @@ func CreateBlankoKeluar(c *fiber.Ctx) error {
 		CreatedAt:             tools.TimeNowJakarta(),
 		Keterangan:            request.Keterangan,
 		SasaranMasyarakat:     request.SasaranMasyarakat,
+		Latitude:              request.Latitude,
+		Longitude:             request.Longitude,
 	}
 
 	//Ambil ID Blanko
