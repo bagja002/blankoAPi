@@ -55,6 +55,7 @@ type BlankoKeluar struct {
 	CreatedAt             string
 	UpdatedAt             string
 	Keterangan            string
+	SasaranMasyarakat     string
 	AsalPendapatan        string
 }
 

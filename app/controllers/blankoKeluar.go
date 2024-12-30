@@ -58,6 +58,7 @@ func CreateBlankoKeluar(c *fiber.Ctx) error {
 		LinkDataDukung:        request.LinkDataDukung,
 		CreatedAt:             tools.TimeNowJakarta(),
 		Keterangan:            request.Keterangan,
+		SasaranMasyarakat:     request.SasaranMasyarakat,
 	}
 
 	//Ambil ID Blanko
@@ -165,6 +166,7 @@ func UpdateBlankoKeluar(c *fiber.Ctx) error {
 		LinkDataDukung:        request.LinkDataDukung,
 		UpdatedAt:             tools.TimeNowJakarta(),
 		Keterangan:            request.Keterangan,
+		SasaranMasyarakat:     request.SasaranMasyarakat,
 	}
 
 	if result := database.DB.Model(&blankoKeluar).Updates(&updates); result.Error != nil {
