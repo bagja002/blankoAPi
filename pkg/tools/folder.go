@@ -10,6 +10,15 @@ func CreateFolder() {
 
 		"public/static/foto-blanko-rusak",
 
+		"public/static/ttd-penerima",
+		"public/static/ttd-pemberi",
+		"public/static/bukti-serah-terima",
+
+		"public/static/ttd-pengiriman",
+		"public/static/bukti-resi",
+		"public/static/bukti-pengiriman-sertifikat",
+		"public/static/bukti-penerimaan-sertifikat",
+
 		//Folder Untuk Foto Sarpras
 
 	}

@@ -72,3 +72,38 @@ type BlankoRusak struct {
 	CreatedAt      string
 	UpdateAt       string
 }
+
+type SerahTerimaSertifikat struct {
+	IdSerahTerimaSertifikat int `gorm:"primary_key;auto_increment"`
+	NamaPenerima            string
+	Jabatan                 string
+	Instansi                string
+	NamaKegiatan            string
+	TanggalPengambilan      string
+	NoSeriBlanko            string
+	JenisSertifikat         string
+	TandaTanganPenerima     string //file
+	TandaTanganPemberi      string //file
+	NamaPemberiSertifikat   string
+	BuktiSerahTerima        string //file
+	CreateAt                string
+	UpdateAt                string
+	Status                  string
+}
+
+type PengirimanSertifikat struct {
+	IdPengirimanSertifikat    int `gorm:"primary_key;auto_increment"`
+	NamaPenerima              string
+	NomorTelpon               string
+	Alamat                    string
+	NoResi                    string
+	BuktiResi                 string //file
+	NominalPengiriman         string
+	TtdTerimaPengiriman       string //File
+	BuktiPengirimanSertifikat string //File
+	BuktiPenerimaanSertikat   string //File
+	ListSertifikatDikirimkan  string
+	CreateAt                  string
+	UpdateAt                  string
+	Status                    string
+}

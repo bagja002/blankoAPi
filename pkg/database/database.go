@@ -54,6 +54,8 @@ func Connect() {
 		&entity.SuperAdmin{},
 		&entity.Admin{}, &entity.Blanko{}, &entity.BlankoKeluar{},
 		&entity.BlankoRusak{},
+		&entity.SerahTerimaSertifikat{},
+		&entity.PengirimanSertifikat{},
 	)
 	if err != nil {
 		log.Fatalf("failed to auto-migrate: %v", err)

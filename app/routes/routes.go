@@ -40,6 +40,18 @@ func SetupRoutesFiber(app *fiber.App) {
 	adminPusat.Put("/updateBlankoRusak", middleware.JwtProtect(), controllers.UpdateBlankoRusak)
 	adminPusat.Delete("/deleteBlankoRusak", middleware.JwtProtect(), controllers.DeleteBlankoRusak)
 
+	//Serah Terima
+	adminPusat.Post("/createSerahTerima", middleware.JwtProtect(), controllers.CreateSerahterimaSertifikat)
+	adminPusat.Get("/getSerahTerima", middleware.JwtProtect(), controllers.GetSerahterimaSertifikat)
+	adminPusat.Put("/updateSerahTerima", middleware.JwtProtect(), controllers.UpdateSerahterimaSertifikat)
+	adminPusat.Delete("/deleteSerahTerima/:id", middleware.JwtProtect(), controllers.DeleteSerahterimaSertifikat)
+
+	//Pengiriman
+	adminPusat.Post("/createPengiriman", middleware.JwtProtect(), controllers.CreatePengirimanSertifikat)
+	adminPusat.Get("/getPengiriman", middleware.JwtProtect(), controllers.GetPengirimanSertifikat)
+	adminPusat.Put("/updatePengiriman/:id", middleware.JwtProtect(), controllers.UpdatePengirimanSertifikat)
+	adminPusat.Delete("/deletePengiriman/:id", middleware.JwtProtect(), controllers.DeletePengirimanSertifikat)
+
 	app.Get("/public/static/foto-blanko-rusak/:string", static.StaticBelankoRusak)
 
 }
