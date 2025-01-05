@@ -22,22 +22,6 @@ import (
 */
 func CreateSerahterimaSertifikat(c *fiber.Ctx) error {
 
-	idAdmin, ok := c.Locals("id_admin").(int)
-	if !ok {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"Message": "Unauthorized"})
-	}
-	role, ok := c.Locals("role").(string)
-	if !ok {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"Message": "Unauthorized"})
-	}
-	name, ok := c.Locals("name").(string)
-	if !ok {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"Message": "Unauthorized"})
-	}
-
-	// Validate the JWT token
-	tools.ValidationJwtLemdik(c, role, idAdmin, name)
-
 	var request entity.SerahTerimaSertifikat
 
 	if err := c.BodyParser(&request); err != nil {
@@ -45,20 +29,11 @@ func CreateSerahterimaSertifikat(c *fiber.Ctx) error {
 	}
 
 	//File File Duluu
-	ttd_penerima, err := c.FormFile("ttd_penerima")
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "File Dulu Tidak Ditemukan"})
-	}
+	ttd_penerima, _ := c.FormFile("ttd_penerima")
 
-	ttd_pemberi, err := c.FormFile("ttd_pemberi")
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "File Dulu Tidak Ditemukan"})
-	}
+	ttd_pemberi, _ := c.FormFile("ttd_pemberi")
 
-	bukti_serah_terima, err := c.FormFile("bukti_serah_terima")
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "File Dulu Tidak Ditemukan"})
-	}
+	bukti_serah_terima, _ := c.FormFile("bukti_serah_terima")
 
 	newData := entity.SerahTerimaSertifikat{
 		NamaPenerima:          request.NamaPenerima,

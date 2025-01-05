@@ -41,7 +41,7 @@ func SetupRoutesFiber(app *fiber.App) {
 	adminPusat.Delete("/deleteBlankoRusak", middleware.JwtProtect(), controllers.DeleteBlankoRusak)
 
 	//Serah Terima
-	adminPusat.Post("/createSerahTerima", middleware.JwtProtect(), controllers.CreateSerahterimaSertifikat)
+	adminPusat.Post("/createSerahTerima", controllers.CreateSerahterimaSertifikat)
 	adminPusat.Get("/getSerahTerima", middleware.JwtProtect(), controllers.GetSerahterimaSertifikat)
 	adminPusat.Put("/updateSerahTerima", middleware.JwtProtect(), controllers.UpdateSerahterimaSertifikat)
 	adminPusat.Delete("/deleteSerahTerima/:id", middleware.JwtProtect(), controllers.DeleteSerahterimaSertifikat)
