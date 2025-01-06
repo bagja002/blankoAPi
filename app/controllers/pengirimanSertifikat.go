@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"os"
 	"template/app/entity"
 	"template/pkg/database"
 	"template/pkg/tools"
@@ -36,15 +37,9 @@ func CreatePengirimanSertifikat(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Bukti Resi file not found"})
 	}
 
-	ttdTerima, err := c.FormFile("ttd_terima")
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Tanda Terima file not found"})
-	}
+	ttdTerima, _ := c.FormFile("ttd_terima")
 
-	buktiPengiriman, err := c.FormFile("bukti_pengiriman")
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Bukti Pengiriman file not found"})
-	}
+	buktiPengiriman, _ := c.FormFile("bukti_pengiriman")
 
 	// Create Pengiriman Sertifikat record
 	newData := entity.PengirimanSertifikat{
@@ -150,6 +145,66 @@ func UpdatePengirimanSertifikat(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"Message": "Data not found"})
 	}
 
+	buktiResi, _ := c.FormFile("bukti_resi")
+
+	ttdTerima, _ := c.FormFile("ttd_terima")
+
+	buktiPengiriman, _ := c.FormFile("bukti_pengiriman")
+
+	tx := database.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if ttdTerima != nil {
+		newPath := "public/static/ttd-penerima/" + tools.RemoverSpaci(ttdTerima.Filename)
+		if err := c.SaveFile(ttdTerima, newPath); err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "Gagal Menyimpan File Dulu",
+				"path":  newPath,
+			})
+		}
+
+		oldPath := "public/static/ttd-penerima/" + pengiriman.TtdTerimaPengiriman
+		if pengiriman.TtdTerimaPengiriman != "" {
+			os.Remove(oldPath)
+		}
+	}
+
+	if buktiResi != nil {
+		newPath := "public/static/bukti-resi/" + tools.RemoverSpaci(buktiResi.Filename)
+		if err := c.SaveFile(buktiResi, newPath); err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "Gagal Menyimpan File Dulu",
+				"path":  newPath,
+			})
+		}
+
+		oldPath := "public/static/bukti-resi/" + pengiriman.BuktiResi
+		if pengiriman.BuktiResi != "" {
+			os.Remove(oldPath)
+		}
+	}
+
+	if buktiPengiriman != nil {
+		newPath := "public/static/bukti-pengiriman-sertifikat/" + tools.RemoverSpaci(buktiPengiriman.Filename)
+		if err := c.SaveFile(buktiPengiriman, newPath); err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "Gagal Menyimpan File Dulu",
+				"path":  newPath,
+			})
+		}
+
+		oldPath := "public/static/bukti-pegiriman-sertifikat/" + pengiriman.BuktiPengirimanSertifikat
+		if pengiriman.BuktiPengirimanSertifikat != "" {
+			os.Remove(oldPath)
+		}
+	}
 	// Update the data
 	pengiriman.NamaPenerima = request.NamaPenerima
 	pengiriman.NomorTelpon = request.NomorTelpon

@@ -77,7 +77,6 @@ func CreateSerahterimaSertifikat(c *fiber.Ctx) error {
 		"Pesan": "Berhasil Membuat Serahterima Sertifikat",
 	})
 }
-
 func UpdateSerahterimaSertifikat(c *fiber.Ctx) error {
 	// Validasi otentikasi dan data pengguna
 	idAdmin, ok := c.Locals("id_admin").(int)
@@ -111,7 +110,68 @@ func UpdateSerahterimaSertifikat(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"Message": "Data not found"})
 	}
 
-	// Update data
+	// Handle file upload
+	ttd_penerima, _ := c.FormFile("ttd_penerima")
+
+	ttd_pemberi, _ := c.FormFile("ttd_pemberi")
+
+	bukti_serah_terima, _ := c.FormFile("bukti_serah_terima")
+
+	tx := database.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if ttd_penerima != nil {
+		newPath := "public/static/ttd-penerima/" + tools.RemoverSpaci(ttd_penerima.Filename)
+		if err := c.SaveFile(ttd_penerima, newPath); err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "Gagal Menyimpan File Dulu",
+				"path":  newPath,
+			})
+		}
+
+		oldPath := "public/static/ttd-penerima/" + serahTerima.TandaTanganPenerima
+		if serahTerima.TandaTanganPenerima != "" {
+			os.Remove(oldPath)
+		}
+	}
+	if ttd_pemberi != nil {
+		newPath := "public/static/ttd-pemberi/" + tools.RemoverSpaci(ttd_pemberi.Filename)
+		if err := c.SaveFile(ttd_pemberi, newPath); err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "Gagal Menyimpan File Dulu",
+				"path":  newPath,
+			})
+		}
+
+		oldPath := "public/static/ttd-pemberi/" + serahTerima.TandaTanganPemberi
+		if serahTerima.TandaTanganPemberi != "" {
+			os.Remove(oldPath)
+		}
+	}
+
+	if bukti_serah_terima != nil {
+		newPath := "public/static/bukti-serah-terima/" + tools.RemoverSpaci(bukti_serah_terima.Filename)
+		if err := c.SaveFile(bukti_serah_terima, newPath); err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "Gagal Menyimpan File Dulu",
+				"path":  newPath,
+			})
+		}
+
+		oldPath := "public/static/bukti-serah-terima/" + serahTerima.BuktiSerahTerima
+		if serahTerima.BuktiSerahTerima != "" {
+			os.Remove(oldPath)
+		}
+	}
+
+	// Update data lainnya
 	serahTerima.NamaPenerima = request.NamaPenerima
 	serahTerima.Jabatan = request.Jabatan
 	serahTerima.Instansi = request.Instansi

@@ -61,6 +61,7 @@ func CreateBlankoKeluar(c *fiber.Ctx) error {
 		SasaranMasyarakat:     request.SasaranMasyarakat,
 		Latitude:              request.Latitude,
 		Longitude:             request.Longitude,
+		SumberPnbp:            request.SumberPnbp,
 	}
 
 	//Ambil ID Blanko
@@ -169,6 +170,9 @@ func UpdateBlankoKeluar(c *fiber.Ctx) error {
 		UpdatedAt:             tools.TimeNowJakarta(),
 		Keterangan:            request.Keterangan,
 		SasaranMasyarakat:     request.SasaranMasyarakat,
+		Latitude:              request.Latitude,
+		Longitude:             request.Longitude,
+		SumberPnbp:            request.SumberPnbp,
 	}
 
 	if result := database.DB.Model(&blankoKeluar).Updates(&updates); result.Error != nil {

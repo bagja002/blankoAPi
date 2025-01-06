@@ -59,6 +59,7 @@ type BlankoKeluar struct {
 	Latitude              string
 	Longitude             string
 	AsalPendapatan        string
+	SumberPnbp            string
 }
 
 type BlankoRusak struct {
