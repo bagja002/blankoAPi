@@ -54,4 +54,8 @@ func SetupRoutesFiber(app *fiber.App) {
 
 	app.Get("/public/static/foto-blanko-rusak/:string", static.StaticBelankoRusak)
 
+	app.Get("/dataAkapi", controllers.GetDataSertifikat)
+	app.Get("/lokasiDiklat", controllers.GetDataBalaiSertifikatLokasi)
+	app.Get("/getSertifikatBalai", controllers.GetDataBalaiSertifikat)
+
 }

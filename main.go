@@ -28,6 +28,7 @@ func main() {
 
 	database.Connect()
 
+	database.Connect2()
 	// Set output log ke file yang telah dibuka
 	log.SetOutput(file)
 
