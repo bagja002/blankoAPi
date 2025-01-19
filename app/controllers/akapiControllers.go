@@ -152,7 +152,7 @@ func GetDataBalaiSertifikatLokasi(c *fiber.Ctx) error {
 		joinCondition = "JOIN master_diklat d ON s.d_id = d.d_id"
 		joinCondition2 = "JOIN master_lembaga ml ON d.l_id = ml.l_id"
 		joinCondition3 = "JOIN master_profil_lembaga pl ON ml.pl_id = pl.pl_id"
-		GrouBy = " pl.pl_nama_lembaga, d.d_sub_jenis_pendidikan"
+		GrouBy = " pl.pl_nama_lembaga, d.d_sub_jenis_pendidikan, d.d_lokasi"
 		selectAwal = `pl.pl_nama_lembaga as nama_lembaga, 
 			d.d_sub_jenis_pendidikan as sub_jenis_pendidikan, 
 			d.d_lokasi as lokasi, 
@@ -161,7 +161,7 @@ func GetDataBalaiSertifikatLokasi(c *fiber.Ctx) error {
 		joinCondition = "JOIN rencana_ujian d ON s.d_id = d.ru_id"
 		joinCondition2 = "JOIN master_unit_kerja ml ON d.ru_unit_kerja = ml.uk_id"
 		joinCondition3 = ""
-		GrouBy = "ml.uk_nama, d.ru_jenis_setifikasi"
+		GrouBy = "ml.uk_nama, d.ru_jenis_setifikasi, d.ru_tempat_ujian"
 		selectAwal = `ml.uk_nama as nama_lembaga, 
 			d.ru_jenis_setifikasi as sub_jenis_pendidikan, 
 			d.ru_tempat_ujian as lokasi, 
@@ -211,7 +211,7 @@ func GetDataBalaiSertifikat(c *fiber.Ctx) error {
 		Joins("JOIN master_lembaga ml ON d.l_id = ml.l_id").
 		Joins("JOIN master_profil_lembaga pl ON ml.pl_id = pl.pl_id").
 		Where("s.isprint = ? AND s.created_on BETWEEN ? AND ?", isPrint, startDate, endDate).
-		Group("pl.pl_nama_lembaga, d.d_sub_jenis_pendidikan").
+		Group("pl.pl_nama_lembaga, d.d_sub_jenis_pendidikan, d.d_lokasi").
 		Order("pl.pl_nama_lembaga, jumlah DESC").
 		Scan(&results1).Error
 
@@ -228,7 +228,7 @@ func GetDataBalaiSertifikat(c *fiber.Ctx) error {
 		Joins("JOIN rencana_ujian d ON s.d_id = d.ru_id").
 		Joins("JOIN master_unit_kerja ml ON d.ru_unit_kerja = ml.uk_id").
 		Where("s.isprint = 1 AND s.created_on BETWEEN ? AND ?", startDate, endDate).
-		Group("ml.uk_nama, d.ru_jenis_setifikasi").
+		Group("ml.uk_nama, d.ru_jenis_setifikasi, d.ru_tempat_ujian").
 		Order("ml.uk_nama ASC, jumlah DESC").
 		Scan(&results2).Error
 
