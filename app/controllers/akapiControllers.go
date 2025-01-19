@@ -206,7 +206,7 @@ func GetDataBalaiSertifikat(c *fiber.Ctx) error {
 
 	err1 := database.DB1.Table("sertifikat s").
 		Select(`pl.pl_nama_lembaga as nama_lembaga, 
-			d.d_sub_jenis_pendidikan as sub_jenis_pendidikan,d.d_lokasi as lokasi, COUNT(*) AS jumlah`).
+			d.d_sub_jenis_pendidikan as sub_jenis_pendidikan, d.d_lokasi as lokasi, COUNT(*) AS jumlah`).
 		Joins("JOIN master_diklat d ON s.d_id = d.d_id").
 		Joins("JOIN master_lembaga ml ON d.l_id = ml.l_id").
 		Joins("JOIN master_profil_lembaga pl ON ml.pl_id = pl.pl_id").
@@ -218,6 +218,7 @@ func GetDataBalaiSertifikat(c *fiber.Ctx) error {
 	if err1 != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"error": "Failed to fetch data for Balai Sertifikat Cop",
+			"err":   err1,
 		})
 	}
 
@@ -234,6 +235,7 @@ func GetDataBalaiSertifikat(c *fiber.Ctx) error {
 	if err2 != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"error": "Failed to fetch data for Balai Sertifikat CoC",
+			"err":   err2,
 		})
 	}
 
