@@ -142,6 +142,7 @@ func GetDataByNameUserSertifika(c *fiber.Ctx) error {
 	}
 	var Selec string
 	var Condition1 string
+	var Condition2 string
 	var Where string
 
 	type Result struct {
@@ -163,17 +164,20 @@ func GetDataByNameUserSertifika(c *fiber.Ctx) error {
 
 	if typeBlanko == "COC" {
 		Selec = "s.s_nomor_sertifikat as nomor_sertifikat, s.s_serial_no as nomor_blanko, ru.ru_jenis_setifikasi as jenis_diklat, ru.ru_tempat_ujian as tempat_diklat, s.s_tanggal as tangal_sertifikat, a.nama_lengkap as nama_lengkap, a.tempat_lahir as tempat_lahir, a.nik, a.tanggal_lahir, a.alamat, s.s_jenis_sertifikat"
-		Condition1 = "JOIN anggota a ON s.anggota_id = a.id JOIN rencana_ujian ru ON s.d_id = ru.ru_id"
+		Condition1 = "JOIN anggota a ON s.anggota_id = a.id"
+		Condition2 = "JOIN rencana_ujian ru ON s.d_id = ru.ru_id"
 		Where = `s.isprint = ? AND s.created_on BETWEEN ? AND ?`
 	} else if typeBlanko == "COP" {
 		Selec = "s.s_nomor_sertifikat as nomor_sertifikat, s.s_serial_no as nomor_blanko, d.d_nama as jenis_diklat, d.d_tempat as tempat_diklat, s.s_tanggal as tanggal_sertifikat, a.nama_lengkap as nama_lengkap, a.tempat_lahir as tempat_lahir, a.nik, a.tanggal_lahir, a.alamat, s.s_jenis_sertifikat"
-		Condition1 = "JOIN anggota a ON s.anggota_id = a.id JOIN master_diklat d ON s.d_id = d.d_id"
+		Condition1 = "JOIN anggota a ON s.anggota_id = a.id"
+		Condition2 = " JOIN master_diklat d ON s.d_id = d.d_id"
 		Where = "s.isprint = ? AND s.created_on BETWEEN ? AND ?"
 	}
 
 	baseQuery := database.DB1.Table("sertifikat AS s").
 		Select(Selec, isPrint, startDateTime, endDateTime).
 		Joins(Condition1).
+		Joins(Condition2).
 		Where(Where).
 		Order("s.s_serial_no")
 
