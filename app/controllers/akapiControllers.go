@@ -107,6 +107,84 @@ func GetDataSertifikat(c *fiber.Ctx) error {
 	})
 }
 
+func GetDataByNameUserSertifika(c *fiber.Ctx) error {
+
+	startDate := c.Query("start_date", "2024-06-01")
+	endDate := c.Query("end_date", "2024-12-31")
+	isPrint := c.Query("is_print", "1")
+	typeBlanko := c.Query("type_blanko", "")
+
+	if isPrint != "0" && isPrint != "1" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid value for is_print. Must be '0' or '1'.",
+		})
+	}
+
+	// Validate type_blanko input
+	if typeBlanko != "COP" && typeBlanko != "COC" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid value for type_blanko. Must be 'COP' or 'COC'.",
+		})
+	}
+
+	// Parse the date range
+	startDateTime, err := time.Parse("2006-01-02", startDate)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid start_date format. Expected format: YYYY-MM-DD.",
+		})
+	}
+	endDateTime, err := time.Parse("2006-01-02", endDate)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid end_date format. Expected format: YYYY-MM-DD.",
+		})
+	}
+	var Selec string
+	var Condition1 string
+	var Where string
+
+	type Result struct {
+		NomorSertifikat   string    `json:"nomor_sertifikat"`
+		NomorBlanko       string    `json:"nomor_blanko"`
+		JenisDiklat       string    `json:"jenis_diklat"`
+		TempatDiklat      string    `json:"tempat_diklat"`
+		TanggalSertifikat time.Time `json:"tanggal_sertifikat"`
+		NamaLengkap       string    `json:"nama_lengkap"`
+		TempatLahir       string    `json:"tempat_lahir"`
+		NIK               string    `json:"nik"`
+		TanggalLahir      time.Time `json:"tanggal_lahir"`
+		Alamat            string    `json:"alamat"`
+		JenisSertifikat   string    `json:"jenis_sertifikat"`
+		Lokasi            string    `json:"lokasi"`
+	}
+
+	var results []Result
+
+	baseQuery := database.DB1.Table("sertifikat AS s").
+		Select(Selec, isPrint, startDateTime, endDateTime).
+		Joins(Condition1).
+		Where(Where).
+		Order("s.s_serial_no")
+
+	if typeBlanko == "COC" {
+		Selec = "s.s_nomor_sertifikat as nomor_sertifikat, s.s_serial_no as nomor_blanko, ru.ru_jenis_setifikasi as jenis_diklat, ru.ru_tempat_ujian as tempat_diklat, s.s_tanggal as tangal_sertifikat, a.nama_lengkap as nama_lengkap, a.tempat_lahir as tempat_lahir, a.nik, a.tanggal_lahir, a.alamat, s.s_jenis_sertifikat"
+		Condition1 = "JOIN anggota a ON s.anggota_id = a.id JOIN rencana_ujian ru ON s.d_id = ru.ru_id"
+		Where = `s.isprint = ? AND s.created_on BETWEEN ? AND ?`
+	} else if typeBlanko == "COP" {
+		Selec = "s.s_nomor_sertifikat as nomor_sertifikat, s.s_serial_no as nomor_blanko, d.d_nama as jenis_diklat, d.d_tempat as tempat_diklat, s.s_tanggal as tanggal_sertifikat, a.nama_lengkap as nama_lengkap, a.tempat_lahir as tempat_lahir, a.nik, a.tanggal_lahir, a.alamat, s.s_jenis_sertifikat"
+		Condition1 = "JOIN anggota a ON s.anggota_id = a.id JOIN master_diklat d ON s.d_id = d.d_id"
+		Where = "s.isprint = ? AND s.created_on BETWEEN ? AND ?"
+	}
+
+	baseQuery.Scan(&results)
+
+	return c.JSON(fiber.Map{
+		"message": "Successfully retrieved data from the database.",
+		"data":    results,
+	})
+}
+
 // Get Diklat dan Solikasi dan Juga Dimana Lokasi Diklatnya
 // jadi Ini Yang harus di jabarkan di diklat
 func GetDataBalaiSertifikatLokasi(c *fiber.Ctx) error {
