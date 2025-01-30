@@ -327,37 +327,30 @@ func GetDataBalaiSertifikat(c *fiber.Ctx) error {
 	})
 }
 
-type Sertifikats struct {
-	DID       uint
-	IsPrint   bool `gorm:"column:isprint"`
-	CreatedOn time.Time
-	Diklat    MasterDiklat `gorm:"foreignKey:DID"`
+type CombinedResponse struct {
+	DataLembaga   []LembagaResponse   `json:"data_lembaga"`
+	DataUnitKerja []UnitKerjaResponse `json:"data_unit_kerja"`
 }
 
-type MasterDiklat struct {
-	DID                 uint `gorm:"primaryKey"`
-	LID                 uint
-	DSubJenisPendidikan string
-	Lembaga             MasterLembaga `gorm:"foreignKey:LID"`
+type LembagaResponse struct {
+	Lembaga    string       `json:"Lembaga"`
+	Sertifikat []DiklatStat `json:"sertifikat"`
 }
 
-type MasterLembaga struct {
-	LID    uint `gorm:"primaryKey"`
-	PLID   uint
-	Profil MasterProfilLembbaga `gorm:"foreignKey:PLID"`
+type UnitKerjaResponse struct {
+	UnitKerja  string            `json:"UnitKerja"`
+	Sertifikat []SertifikasiStat `json:"sertifikat"`
 }
 
-type MasterProfilLembbaga struct {
-	PLID          uint `gorm:"primaryKey"`
-	PLNamaLembaga string
+type DiklatStat struct {
+	NamaDiklat string `json:"Nama Diklat"`
+	Total      int    `json:"total"`
 }
 
-type HasilQuery struct {
-	Lembaga     string
-	JenisDiklat string
-	Jumlah      int
+type SertifikasiStat struct {
+	JenisSertifikasi string `json:"Jenis Sertifikasi"`
+	Total            int    `json:"total"`
 }
-
 type APIResponse struct {
 	Lembaga    string `json:"Lembaga"`
 	Sertifikat []struct {
@@ -368,52 +361,91 @@ type APIResponse struct {
 
 func GetDataBalaiSertifikats(c *fiber.Ctx) error {
 
-	var results []HasilQuery
+	var resultsLembaga []struct {
+		Lembaga     string
+		JenisDiklat string
+		Jumlah      int
+	}
 
-	// Build query
-	err := database.DB1.Table("sertifikat").
+	err := database.DB1.Table("sertifikat s").
 		Select("pl.pl_nama_lembaga as lembaga, d.d_sub_jenis_pendidikan as jenis_diklat, COUNT(*) as jumlah").
-		Joins("JOIN master_diklat d ON sertifikat.d_id = d.d_id").
+		Joins("JOIN master_diklat d ON s.d_id = d.d_id").
 		Joins("JOIN master_lembaga ml ON d.l_id = ml.l_id").
 		Joins("JOIN master_profil_lembaga pl ON ml.pl_id = pl.pl_id").
-		Where("sertifikat.isprint = ? AND sertifikat.created_on BETWEEN ? AND ?", true, "2024-06-01", "2024-12-31").
+		Where("s.isprint = ? AND s.created_on BETWEEN ? AND ?", true, "2024-06-01", "2024-12-31").
 		Group("pl.pl_nama_lembaga, d.d_sub_jenis_pendidikan").
 		Order("pl.pl_nama_lembaga ASC").
-		Scan(&results).Error
+		Scan(&resultsLembaga).Error
+
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	// Process grouping
-	grouped := make(map[string]APIResponse)
-	for _, result := range results {
-		key := result.Lembaga
-		if _, ok := grouped[key]; !ok {
-			grouped[key] = APIResponse{
-				Lembaga: result.Lembaga,
+	// Query Kedua (Unit Kerja)
+	var resultsUnitKerja []struct {
+		UnitKerja        string
+		JenisSertifikasi string
+		Jumlah           int
+	}
+
+	err = database.DB1.Table("sertifikat s").
+		Select("ml.uk_nama as unit_kerja, d.ru_jenis_setifikasi as jenis_sertifikasi, COUNT(*) as jumlah").
+		Joins("JOIN rencana_ujian d ON s.d_id = d.ru_id").
+		Joins("JOIN master_unit_kerja ml ON d.ru_unit_kerja = ml.uk_id").
+		Where("s.isprint = ? AND s.created_on BETWEEN ? AND ?", true, "2024-06-01", "2024-12-31").
+		Group("ml.uk_nama, d.ru_jenis_setifikasi").
+		Order("ml.uk_nama ASC").
+		Scan(&resultsUnitKerja).Error
+
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	// Process Lembaga Data
+	lembagaMap := make(map[string]LembagaResponse)
+	for _, item := range resultsLembaga {
+		if _, ok := lembagaMap[item.Lembaga]; !ok {
+			lembagaMap[item.Lembaga] = LembagaResponse{
+				Lembaga: item.Lembaga,
 			}
 		}
-
-		entry := grouped[key]
-		entry.Sertifikat = append(entry.Sertifikat, struct {
-			NamaDiklat string `json:"Nama Diklat"`
-			Total      int    `json:"total"`
-		}{
-			NamaDiklat: result.JenisDiklat,
-			Total:      result.Jumlah,
+		entry := lembagaMap[item.Lembaga]
+		entry.Sertifikat = append(entry.Sertifikat, DiklatStat{
+			NamaDiklat: item.JenisDiklat,
+			Total:      item.Jumlah,
 		})
-
-		grouped[key] = entry
+		lembagaMap[item.Lembaga] = entry
 	}
 
-	// Convert map to slice
-	finalResult := make([]APIResponse, 0, len(grouped))
-	for _, v := range grouped {
-		finalResult = append(finalResult, v)
+	// Process Unit Kerja Data
+	unitKerjaMap := make(map[string]UnitKerjaResponse)
+	for _, item := range resultsUnitKerja {
+		if _, ok := unitKerjaMap[item.UnitKerja]; !ok {
+			unitKerjaMap[item.UnitKerja] = UnitKerjaResponse{
+				UnitKerja: item.UnitKerja,
+			}
+		}
+		entry := unitKerjaMap[item.UnitKerja]
+		entry.Sertifikat = append(entry.Sertifikat, SertifikasiStat{
+			JenisSertifikasi: item.JenisSertifikasi,
+			Total:            item.Jumlah,
+		})
+		unitKerjaMap[item.UnitKerja] = entry
 	}
 
-	return c.JSON(fiber.Map{
-		"data": finalResult,
+	// Convert maps to slices
+	finalLembaga := make([]LembagaResponse, 0, len(lembagaMap))
+	for _, v := range lembagaMap {
+		finalLembaga = append(finalLembaga, v)
+	}
+
+	finalUnitKerja := make([]UnitKerjaResponse, 0, len(unitKerjaMap))
+	for _, v := range unitKerjaMap {
+		finalUnitKerja = append(finalUnitKerja, v)
+	}
+
+	return c.JSON(CombinedResponse{
+		DataLembaga:   finalLembaga,
+		DataUnitKerja: finalUnitKerja,
 	})
-
 }
