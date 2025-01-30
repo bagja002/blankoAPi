@@ -444,8 +444,13 @@ func GetDataBalaiSertifikats(c *fiber.Ctx) error {
 		finalUnitKerja = append(finalUnitKerja, v)
 	}
 
-	return c.JSON(CombinedResponse{
+	respon := CombinedResponse{
 		DataLembaga:   finalLembaga,
 		DataUnitKerja: finalUnitKerja,
+	}
+
+	return c.JSON(fiber.Map{
+		"Pesan": "Berhasil Get Data",
+		"data":  respon,
 	})
 }
