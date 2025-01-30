@@ -59,4 +59,5 @@ func SetupRoutesFiber(app *fiber.App) {
 	app.Get("/getSertifikatBalai", controllers.GetDataBalaiSertifikat)
 	app.Get("/getByNameSertifkat", controllers.GetDataByNameUserSertifika)
 
+	app.Get("/getBalaiSertifikat", controllers.GetDataBalaiSertifikats)
 }
