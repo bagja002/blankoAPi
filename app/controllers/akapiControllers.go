@@ -326,3 +326,95 @@ func GetDataBalaiSertifikat(c *fiber.Ctx) error {
 		"balai_sertifikat_coc": results2,
 	})
 }
+
+type Sertifikats struct {
+	DID       uint
+	IsPrint   bool `gorm:"column:isprint"`
+	CreatedOn time.Time
+	Diklat    MasterDiklat `gorm:"foreignKey:DID"`
+}
+
+type MasterDiklat struct {
+	DID                 uint `gorm:"primaryKey"`
+	LID                 uint
+	DSubJenisPendidikan string
+	Lembaga             MasterLembaga `gorm:"foreignKey:LID"`
+}
+
+type MasterLembaga struct {
+	LID    uint `gorm:"primaryKey"`
+	PLID   uint
+	Profil MasterProfilLembbaga `gorm:"foreignKey:PLID"`
+}
+
+type MasterProfilLembbaga struct {
+	PLID          uint `gorm:"primaryKey"`
+	PLNamaLembaga string
+}
+
+type HasilQuery struct {
+	Lembaga     string
+	JenisDiklat string
+	Jumlah      int
+}
+
+type APIResponse struct {
+	Lembaga    string `json:"Lembaga"`
+	Sertifikat []struct {
+		NamaDiklat string `json:"Nama Diklat"`
+		Total      int    `json:"total"`
+	} `json:"sertifikat"`
+}
+
+func GetDataBalaiSertifikats(c *fiber.Ctx) error {
+
+	var results []HasilQuery
+
+	// Build query
+	err := database.DB1.Model(&Sertifikats{}).
+		Select("pl.pl_nama_lembaga as lembaga, d.d_sub_jenis_pendidikan as jenis_diklat, COUNT(*) as jumlah").
+		Joins("JOIN master_diklat d ON sertifikat.d_id = d.d_id").
+		Joins("JOIN master_lembaga ml ON d.l_id = ml.l_id").
+		Joins("JOIN master_profil_lembaga pl ON ml.pl_id = pl.pl_id").
+		Where("sertifikat.isprint = ? AND sertifikat.created_on BETWEEN ? AND ?", true, "2024-06-01", "2024-12-31").
+		Group("pl.pl_nama_lembaga, d.d_sub_jenis_pendidikan").
+		Order("pl.pl_nama_lembaga ASC").
+		Scan(&results).Error
+
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	// Process grouping
+	grouped := make(map[string]APIResponse)
+	for _, result := range results {
+		key := result.Lembaga
+		if _, ok := grouped[key]; !ok {
+			grouped[key] = APIResponse{
+				Lembaga: result.Lembaga,
+			}
+		}
+
+		entry := grouped[key]
+		entry.Sertifikat = append(entry.Sertifikat, struct {
+			NamaDiklat string `json:"Nama Diklat"`
+			Total      int    `json:"total"`
+		}{
+			NamaDiklat: result.JenisDiklat,
+			Total:      result.Jumlah,
+		})
+
+		grouped[key] = entry
+	}
+
+	// Convert map to slice
+	finalResult := make([]APIResponse, 0, len(grouped))
+	for _, v := range grouped {
+		finalResult = append(finalResult, v)
+	}
+
+	return c.JSON(fiber.Map{
+		"data": finalResult,
+	})
+
+}
