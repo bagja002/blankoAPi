@@ -371,7 +371,7 @@ func GetDataBalaiSertifikats(c *fiber.Ctx) error {
 	var results []HasilQuery
 
 	// Build query
-	err := database.DB1.Model(&Sertifikats{}).
+	err := database.DB1.Model(&Sertifikat{}).
 		Select("pl.pl_nama_lembaga as lembaga, d.d_sub_jenis_pendidikan as jenis_diklat, COUNT(*) as jumlah").
 		Joins("JOIN master_diklat d ON sertifikat.d_id = d.d_id").
 		Joins("JOIN master_lembaga ml ON d.l_id = ml.l_id").
