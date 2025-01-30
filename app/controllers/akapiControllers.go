@@ -371,7 +371,7 @@ func GetDataBalaiSertifikats(c *fiber.Ctx) error {
 	var results []HasilQuery
 
 	// Build query
-	err := database.DB1.Model(&Sertifikat{}).
+	err := database.DB1.Table("sertifikat").
 		Select("pl.pl_nama_lembaga as lembaga, d.d_sub_jenis_pendidikan as jenis_diklat, COUNT(*) as jumlah").
 		Joins("JOIN master_diklat d ON sertifikat.d_id = d.d_id").
 		Joins("JOIN master_lembaga ml ON d.l_id = ml.l_id").
@@ -380,7 +380,6 @@ func GetDataBalaiSertifikats(c *fiber.Ctx) error {
 		Group("pl.pl_nama_lembaga, d.d_sub_jenis_pendidikan").
 		Order("pl.pl_nama_lembaga ASC").
 		Scan(&results).Error
-
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
