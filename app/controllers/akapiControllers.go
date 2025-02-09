@@ -382,12 +382,24 @@ func GetDataBalaiSertifikats(c *fiber.Ctx) error {
 		Jumlah      int
 	}
 
+	// Ambil parameter waktu dari query string
+	waktuMulai := c.Query("waktu_awal")
+	waktuBerakhir := c.Query("waktu_berakhir")
+
+	// Pastikan parameter waktu tidak kosong, jika kosong gunakan default
+	if waktuMulai == "" {
+		waktuMulai = "2024-06-01"
+	}
+	if waktuBerakhir == "" {
+		waktuBerakhir = "2024-12-31"
+	}
+
 	err := database.DB1.Table("sertifikat s").
 		Select("pl.pl_nama_lembaga as lembaga, d.d_sub_jenis_pendidikan as jenis_diklat, COUNT(*) as jumlah").
 		Joins("JOIN master_diklat d ON s.d_id = d.d_id").
 		Joins("JOIN master_lembaga ml ON d.l_id = ml.l_id").
 		Joins("JOIN master_profil_lembaga pl ON ml.pl_id = pl.pl_id").
-		Where("s.isprint = ? AND s.created_on BETWEEN ? AND ?", true, "2024-06-01", "2024-12-31").
+		Where("s.isprint = ? AND s.created_on BETWEEN ? AND ?", 1, waktuMulai, waktuBerakhir).
 		Group("pl.pl_nama_lembaga, d.d_sub_jenis_pendidikan").
 		Order("pl.pl_nama_lembaga ASC").
 		Scan(&resultsLembaga).Error
@@ -407,7 +419,7 @@ func GetDataBalaiSertifikats(c *fiber.Ctx) error {
 		Select("ml.uk_nama as unit_kerja, d.ru_jenis_setifikasi as jenis_sertifikasi, COUNT(*) as jumlah").
 		Joins("JOIN rencana_ujian d ON s.d_id = d.ru_id").
 		Joins("JOIN master_unit_kerja ml ON d.ru_unit_kerja = ml.uk_id").
-		Where("s.isprint = ? AND s.created_on BETWEEN ? AND ?", true, "2024-06-01", "2024-12-31").
+		Where("s.isprint = ? AND s.created_on BETWEEN ? AND ?", 1, waktuMulai, waktuBerakhir).
 		Group("ml.uk_nama, d.ru_jenis_setifikasi").
 		Order("ml.uk_nama ASC").
 		Scan(&resultsUnitKerja).Error
@@ -478,12 +490,24 @@ func GetDataBalaiSertifikatsReverse(c *fiber.Ctx) error {
 		Jumlah      int
 	}
 
+	// Ambil parameter waktu dari query string
+	waktuMulai := c.Query("waktu_awal")
+	waktuBerakhir := c.Query("waktu_berakhir")
+
+	// Pastikan parameter waktu tidak kosong, jika kosong gunakan default
+	if waktuMulai == "" {
+		waktuMulai = "2024-06-01"
+	}
+	if waktuBerakhir == "" {
+		waktuBerakhir = "2024-12-31"
+	}
+
 	err := database.DB1.Table("sertifikat s").
 		Select("d.d_sub_jenis_pendidikan AS jenis_diklat, pl.pl_nama_lembaga AS lembaga, COUNT(*) AS jumlah").
 		Joins("JOIN master_diklat d ON s.d_id = d.d_id").
 		Joins("JOIN master_lembaga ml ON d.l_id = ml.l_id").
 		Joins("JOIN master_profil_lembaga pl ON ml.pl_id = pl.pl_id").
-		Where("s.isprint = ? AND s.created_on BETWEEN ? AND ?", true, "2024-06-01", "2024-12-31").
+		Where("s.isprint = ? AND s.created_on BETWEEN ? AND ?", 1, waktuMulai, waktuBerakhir).
 		Group("d.d_sub_jenis_pendidikan, pl.pl_nama_lembaga").
 		Order("d.d_sub_jenis_pendidikan ASC").
 		Scan(&resultsLembaga).Error
@@ -503,7 +527,7 @@ func GetDataBalaiSertifikatsReverse(c *fiber.Ctx) error {
 		Select("d.ru_jenis_setifikasi AS jenis_sertifikasi, ml.uk_nama AS unit_kerja, COUNT(*) AS jumlah").
 		Joins("JOIN rencana_ujian d ON s.d_id = d.ru_id").
 		Joins("JOIN master_unit_kerja ml ON d.ru_unit_kerja = ml.uk_id").
-		Where("s.isprint = ? AND s.created_on BETWEEN ? AND ?", true, "2024-06-01", "2024-12-31").
+		Where("s.isprint = ? AND s.created_on BETWEEN ? AND ?", 1, waktuMulai, waktuBerakhir).
 		Group("d.ru_jenis_setifikasi, ml.uk_nama").
 		Order("d.ru_jenis_setifikasi ASC").
 		Scan(&resultsUnitKerja).Error
