@@ -60,4 +60,6 @@ func SetupRoutesFiber(app *fiber.App) {
 	app.Get("/getByNameSertifkat", controllers.GetDataByNameUserSertifika)
 
 	app.Get("/getBalaiSertifikat", controllers.GetDataBalaiSertifikats)
+	//reverse Sertifikat
+	app.Get("/getSertfikatiBalai", controllers.GetDataBalaiSertifikats)
 }

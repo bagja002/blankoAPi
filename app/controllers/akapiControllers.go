@@ -332,6 +332,21 @@ type CombinedResponse struct {
 	DataUnitKerja []UnitKerjaResponse `json:"data_unit_kerja"`
 }
 
+type RespostSertifikat struct {
+	DataCOP []SertifikatPerbalai `json:"data"`
+	DataCOC []SertifikatPerbalai
+}
+
+type SertifikatPerbalai struct {
+	Setifikat string `json:"setifikat"`
+	Lembaga   []Lembaga
+}
+
+type Lembaga struct {
+	NamaLembaga string `json:"nama_embaga"`
+	Total       int    `json:"total"`
+}
+
 type LembagaResponse struct {
 	Lembaga    string       `json:"Lembaga"`
 	Sertifikat []DiklatStat `json:"sertifikat"`
@@ -452,5 +467,90 @@ func GetDataBalaiSertifikats(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"Pesan": "Berhasil Get Data",
 		"data":  respon,
+	})
+}
+
+func GetDataBalaiSertifikatsReverse(c *fiber.Ctx) error {
+
+	var resultsLembaga []struct {
+		JenisDiklat string
+		Lembaga     string
+		Jumlah      int
+	}
+
+	err := database.DB1.Table("sertifikat s").
+		Select("d.d_sub_jenis_pendidikan AS jenis_diklat, pl.pl_nama_lembaga AS lembaga, COUNT(*) AS jumlah").
+		Joins("JOIN master_diklat d ON s.d_id = d.d_id").
+		Joins("JOIN master_lembaga ml ON d.l_id = ml.l_id").
+		Joins("JOIN master_profil_lembaga pl ON ml.pl_id = pl.pl_id").
+		Where("s.isprint = ? AND s.created_on BETWEEN ? AND ?", true, "2024-06-01", "2024-12-31").
+		Group("d.d_sub_jenis_pendidikan, pl.pl_nama_lembaga").
+		Order("d.d_sub_jenis_pendidikan ASC").
+		Scan(&resultsLembaga).Error
+
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	// Query Kedua (Unit Kerja)
+	var resultsUnitKerja []struct {
+		UnitKerja        string
+		JenisSertifikasi string
+		Jumlah           int
+	}
+
+	err = database.DB1.Table("sertifikat s").
+		Select("d.ru_jenis_setifikasi AS jenis_sertifikasi, ml.uk_nama AS unit_kerja, COUNT(*) AS jumlah").
+		Joins("JOIN rencana_ujian d ON s.d_id = d.ru_id").
+		Joins("JOIN master_unit_kerja ml ON d.ru_unit_kerja = ml.uk_id").
+		Where("s.isprint = ? AND s.created_on BETWEEN ? AND ?", true, "2024-06-01", "2024-12-31").
+		Group("d.ru_jenis_setifikasi, ml.uk_nama").
+		Order("d.ru_jenis_setifikasi ASC").
+		Scan(&resultsUnitKerja).Error
+
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	// Inisialisasi struct untuk response
+	var response RespostSertifikat
+
+	// Memproses resultsLembaga ke dalam DataCOC
+	lembagaMap := make(map[string][]Lembaga)
+	for _, r := range resultsLembaga {
+		lembagaMap[r.JenisDiklat] = append(lembagaMap[r.JenisDiklat], Lembaga{
+			NamaLembaga: r.Lembaga,
+			Total:       r.Jumlah,
+		})
+	}
+
+	for jenisDiklat, lembagaList := range lembagaMap {
+		response.DataCOC = append(response.DataCOC, SertifikatPerbalai{
+			Setifikat: jenisDiklat,
+			Lembaga:   lembagaList,
+		})
+	}
+
+	// Memproses resultsUnitKerja ke dalam DataCOP
+	unitKerjaMap := make(map[string][]Lembaga)
+	for _, r := range resultsUnitKerja {
+		unitKerjaMap[r.JenisSertifikasi] = append(unitKerjaMap[r.JenisSertifikasi], Lembaga{
+			NamaLembaga: r.UnitKerja,
+			Total:       r.Jumlah,
+		})
+	}
+
+	for jenisSertifikasi, unitKerjaList := range unitKerjaMap {
+		response.DataCOP = append(response.DataCOP, SertifikatPerbalai{
+			Setifikat: jenisSertifikasi,
+			Lembaga:   unitKerjaList,
+		})
+	}
+
+	// response sekarang berisi hasil yang telah dikelompokkan ke dalam struct yang sesuai
+
+	return c.JSON(fiber.Map{
+		"Pesan": "Berhasil Get Data",
+		"data":  response,
 	})
 }
