@@ -61,5 +61,5 @@ func SetupRoutesFiber(app *fiber.App) {
 
 	app.Get("/getBalaiSertifikat", controllers.GetDataBalaiSertifikats)
 	//reverse Sertifikat
-	app.Get("/getSertfikatiBalai", controllers.GetDataBalaiSertifikats)
+	app.Get("/getSertfikatiBalai", controllers.GetDataBalaiSertifikatsReverse)
 }
