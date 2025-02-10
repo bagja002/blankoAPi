@@ -404,6 +404,11 @@ func GetDataBalaiSertifikats(c *fiber.Ctx) error {
 		Order("pl.pl_nama_lembaga ASC").
 		Scan(&resultsLembaga).Error
 
+	total := 0
+	for _, jumlah := range resultsLembaga {
+		total += jumlah.Jumlah // Menggunakan += tanpa ++
+	}
+
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -511,6 +516,11 @@ func GetDataBalaiSertifikatsReverse(c *fiber.Ctx) error {
 		Group("d.d_sub_jenis_pendidikan, pl.pl_nama_lembaga").
 		Order("d.d_sub_jenis_pendidikan ASC").
 		Scan(&resultsLembaga).Error
+
+	total := 0
+	for _, jumlah := range resultsLembaga {
+		total += jumlah.Jumlah // Menggunakan += tanpa ++
+	}
 
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
