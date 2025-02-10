@@ -409,7 +409,7 @@ func GetDataBalaiSertifikats(c *fiber.Ctx) error {
 		total += jumlah.Jumlah // Menggunakan += tanpa ++
 	}
 
-	fmt.Println("total Jumlah: ", total)
+	fmt.Println("total Jumlah Balai serifikat: ", total)
 
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
@@ -524,7 +524,7 @@ func GetDataBalaiSertifikatsReverse(c *fiber.Ctx) error {
 		total += jumlah.Jumlah // Menggunakan += tanpa ++
 	}
 
-	fmt.Println("total Jumlah: ", total)
+	fmt.Println("total Jumlah Sertifikat: ", total)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
